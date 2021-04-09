@@ -1,0 +1,257 @@
+/*============================================================
+	For Small Desktop
+==============================================================*/
+
+@media (min-width: 980px) and (max-width: 1150px) {
+
+
+.sc_counter .text {
+  margin-top: 25px;
+}
+.sc_cta p {
+  font-size: 15px;
+  margin: 9px 0 0;
+}
+.sc_cta a {
+  padding: 10px 25px;
+}
+
+}
+
+
+/*============================================================
+	Tablet (Portrait) Design for a width of 768px
+==============================================================*/
+
+@media (min-width: 768px) and (max-width: 979px) {
+
+.shortcode-widget {
+  margin-top: 50px;
+}
+
+.spn_sc_iconbox_area .single_icon_box .iconbox_text h2 {
+  margin: 5px 0 5px 5px;
+}
+
+.footer-navigation .footer-nav ul li a {
+  padding: 30px 18px;
+}
+
+.sc_bg_section .text {
+  padding: 35px 25px 0;
+}
+.sc_social div a {
+  margin: 7px;
+}
+
+.sc_counter .text {
+  margin-top: 25px;
+}
+.sc_box_title.style4 h2,
+.sc_box_title.style3 h2,
+.sc_box_title.style5 h2 {
+  padding: 20px 10px;
+}
+
+.sc_cta p {
+  font-size: 18px;
+  width: 60%;
+}
+
+.sc_cta a {
+  margin-top: 6%;
+}
+.sc_parallax_bg .text {
+    padding-top: 0;
+}
+
+
+}
+
+
+/*============================================================
+	Mobile (Portrait) Design for a width of 320px
+==============================================================*/
+
+@media only screen and (max-width: 767px) {
+
+.shortcode-widget {
+  margin-top: 50px;
+}
+.demo_head h1 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+.title3 {
+  font-size: 18px;
+}
+
+.spn_sc_iconbox_area .single_icon_box .iconbox_icon {
+  margin: 0 0 10px;
+}
+
+.spn_sc_iconbox_area .single_icon_box .iconbox_text {
+  text-align: center;
+}
+
+.shortcode_section {
+  padding-bottom: 0;
+}
+
+.pix_sohortcode_image_slider .text h2 {
+  font-size: 13px;
+  margin-top: 15px;
+}
+
+.sc_bg_section .text {
+  padding: 25px;
+}
+
+.sc_bg_section {
+  margin-bottom: 50px;
+}
+
+.sc_btn.sc_tooltip {
+  display: block;
+  margin: 10px auto;
+  width: 200px;
+}
+
+.sc_contact_info .social {
+  margin-bottom: 15px;
+  margin-top: 0;
+  text-align: left;
+}
+
+.sc_content_slider .flexslider .slides li .slider_text h2 {
+  margin: 15px 0 30px;
+  line-height: 25px;
+}
+
+.sc_counter .text {
+  margin-top: 25px;
+}
+
+.sc_box_title h2 {
+  font-size: 19px;
+  line-height: 27px;
+  padding: 20px 0;
+}
+
+.sc_cta {
+  padding: 25px 0;
+  text-align: center;
+}
+
+.sc_cta p {
+  float: none;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.sc_cta a {
+  float: none;
+}
+
+}
+
+
+/*============================================================
+    iPhone 6 Plus (Portrait) 375px
+==============================================================*/
+
+@media only screen and (min-width: 321px) and (max-width: 375px) {
+
+.shortcode-widget {
+  margin-top: 50px;
+}
+.demo_head h1 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.sc_social div a {
+  margin: 7px;
+}
+
+
+}
+
+
+/*============================================================
+    iPhone 6 Plus (Portrait) 414px
+==============================================================*/
+
+@media only screen and (min-width: 376px) and (max-width: 414px) {
+
+
+.shortcode-widget {
+  margin-top: 50px;
+}
+.demo_head h1 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+
+}
+
+
+/*============================================================
+    iPhone 5 landscape · width: 568px
+==============================================================*/
+
+@media only screen and (min-width: 420px) and (max-width: 568px) {
+
+.shortcode-widget {
+  margin-top: 50px;
+}
+.demo_head h1 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.sc_btn.sc_tooltip {
+  display: block;
+  margin: 10px auto;
+  width: 250px;
+}
+
+}
+
+
+
+/*============================================================
+	iPhone 6 landscape · width: 667px
+==============================================================*/
+
+@media only screen and (min-width: 569px) and (max-width: 667px) {
+
+.shortcode-widget {
+  margin-top: 50px;
+}
+.demo_head h1 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+
+}
+
+
+
+/*============================================================
+    iPhone 6 Plus landscape · width: 736px
+==============================================================*/
+
+@media only screen and (min-width: 668px) and (max-width: 736px) {
+
+.shortcode-widget {
+  margin-top: 50px;
+}
+.demo_head h1 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+}
