@@ -216,7 +216,7 @@
                                 </span>
                                 <h4>Near Stakers collection</h4>
                             </div>
-                            <p>We are actively seeking for the best validators on the NEAR blockchain in order to ensure a stable earning to our art investors, APY will be transparent on each staking round. If you rub a validator and are interested on our project please get in touch below!</p>
+                            <p>We are actively seeking for the best validators on the NEAR blockchain in order to ensure a stable earning to our art investors, APY will be transparent on each staking round. If you are an interested validator please get in touch below!</p>
                         </div>
                         <div class="feature-item">
                             <div class="clearfix">
@@ -225,7 +225,7 @@
                                 </span>
                                 <h4>Rainbow bridge NFT exchange with ethereum</h4>
                             </div>
-                            <p>The card game launch will set the stage up for a more in depth collaboration with the rainbow bridge team, after this step new artists will collaborate creating staves and gods cards, and we'll make sure their work will be visible and valuable on both NEAR and ethereum blockchain.</p>
+                            <p>The card market/game launch will set the stage up for a more in depth collaboration with the rainbow bridge team. Then new artists will collaborate creating staves and gods cards, and we'll make sure their work will be visible and valuable on both NEAR and ethereum blockchain.</p>
                         </div>
                         <div class="feature-item">
                             <div class="clearfix">
@@ -450,7 +450,8 @@
                     </div>
                     <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
                         <div class="footer-item recent-posts">
-                            <h4>Support our vision on <a href="https://paras.id/jilt.near/creation" target="_blank">Paras</a></h4>
+                            <h4>Support Varda on <a href="https://paras.id/jilt.near/creation" target="_blank">Paras</a></h4>
+				<h4>Learn more about Varda on <a href="https://www.instagram.com/varda.vision" target="_blank">Paras</a></h4>
                         </div>
                     </div>
                 </div>
@@ -548,69 +549,7 @@
         <script src="syntax-highlighter/scripts/prettify.min.js"></script>
         <script type="text/javascript">$.SyntaxHighlighter.init();</script>
         <script type="text/javascript" src="js/main.js"></script>
-		<!-- Contact form validation -->
-        <script type="text/javascript">
-            $(function(){
-                //Magazine 2 breaking news
 
-                $('#contact-form').validate({
-                    rules: {
-                        fname: {
-                            required: true,
-                            minlength: 2
-                        },
-                        lname: {
-                            required: true,
-                            minlength: 2
-                        },
-                        email: {
-                            required: true,
-                            email: true
-                        },
-                        message: {
-                            required: true
-                        }
-                    },
-                    messages: {
-                        fname: {
-                            required: "Please Enter Your First Name",
-                            minlength: "your name must consist of at least 2 characters"
-                        },
-                        lname: {
-                            required: "Please Enter Your Last Name",
-                            minlength: "your name must consist of at least 2 characters"
-                        },
-                        email: {
-                            required: "Please Enter Your Email"
-                        },
-                        message: {
-                            required: "um...yea, you have to write something to send this form.",
-                            minlength: "thats all? really?"
-                        }
-                    },
-                    submitHandler: function(form) {
-                        $(form).ajaxSubmit({
-                            type:"POST",
-                            data: $(form).serialize(),
-                            url:"mail.php",
-                            success: function() {
-                                $('#contact-form :input').attr('disabled', 'disabled');
-                                $('#contact-form').fadeTo( "slow", 0.15, function() {
-                                    $(this).find(':input').attr('disabled', 'disabled');
-                                    $(this).find('label').css('cursor','default');
-                                    $('#success').fadeIn();
-                                });
-                            },
-                            error: function() {
-                                $('#contact-form').fadeTo( "slow", 0.15, function() {
-                                    $('#error').fadeIn();
-                                });
-                            }
-                        });
-                    }
-                });
-            });
-        </script>
         <!-- shortcode carasole -->
         <script type="text/javascript">
             $(document).ready(function() {
