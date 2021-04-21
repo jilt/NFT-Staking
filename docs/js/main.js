@@ -2628,68 +2628,7 @@ $(window).on("load", function() {
 
 })(jQuery);
 
-// ==========  START GOOGLE MAP ========== //
 
-function initialize() {
-    // index 4
-    var myLatLng = new google.maps.LatLng(23.751510, 90.386137);
-    var mapOptions = {
-        zoom: 14,
-        center: myLatLng,
-        disableDefaultUI: false,
-        scrollwheel: true,
-        navigationControl: true,
-        mapTypeControl: true,
-        scaleControl: true,
-        draggable: true,
-        mapTypeControlOptions: {
-            mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'roadatlas']
-        }
-    };
-
-    var map = new google.maps.Map(document.getElementById('map-canvas4'), mapOptions);
-    var marker = new google.maps.Marker({
-        position: myLatLng,
-        map: map,
-        ////icon: 'img/location-icon.png',
-        title: ''
-    });
-
-}
-google.maps.event.addDomListener(window, "load", initialize);
-
-function googleMap() {
-    // index all
-    var myLatLng2 = new google.maps.LatLng(23.751510, 90.386137);
-    var mapOptions = {
-        zoom: 14,
-        center: myLatLng2,
-        disableDefaultUI: false,
-        scrollwheel: true,
-        navigationControl: true,
-        mapTypeControl: true,
-        scaleControl: true,
-        draggable: true,
-        mapTypeControlOptions: {
-            mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'roadatlas']
-        }
-    };
-
-    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-
-
-    var marker = new google.maps.Marker({
-        position: myLatLng2,
-        map: map,
-        //icon: 'img/location-icon.png',
-        title: ''
-    });
-
-}
-google.maps.event.addDomListener(window, "load", googleMap);
-
-
-// ========== END GOOGLE MAP ========== //
 
 $(function() {
     // post thumb slider
