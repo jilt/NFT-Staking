@@ -5,11 +5,12 @@ impl Contract {
     #[payable]
     pub fn nft_mint(&mut self, token_id: TokenId, metadata: String) {
         let initial_storage_usage = env::storage_usage();
-
+        // self.assert_owner();
         let token = Token {
             owner_id: env::predecessor_account_id(),
             metadata,
             approved_account_ids: Default::default(),
+            approval_id: 0,
         };
         assert!(
             self.tokens_by_id.insert(&token_id, &token).is_none(),

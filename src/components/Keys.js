@@ -1,122 +1,175 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as nearAPI from 'near-api-js';
 import { get, set, del } from '../utils/storage';
-import { generateSeedPhrase } from 'near-seed-phrase';
-import { 
+import { generateSeedPhrase, parseSeedPhrase } from 'near-seed-phrase';
+import {
+    setSignerFromSeed,
 	contractName,
-	createAccessKeyAccount,
+    createGuestAccount,
 	postJson,
-	postSignedJson
+    networkId,
+	GAS
 } from '../utils/near-utils';
 
 const LOCAL_KEYS = '__LOCAL_KEYS';
 
 const {
+    Account,
 	KeyPair,
-	utils: { PublicKey }
+	utils: { PublicKey,
+		format: {
+			formatNearAmount
+		} }
 } = nearAPI;
 
 export const Keys = ({ near, update, localKeys }) => {
 	if (!near.connection) return null;
+    
+	const [username, setUsername] = useState('');
+	const [accountId, setAccountId] = useState('');
 
 	useEffect(() => {
 		if (!localKeys) loadKeys();
 	}, []);
 
 	const loadKeys = async () => {
-		const { seedPhrase, accountId, accessPublic, accessSecret } = get(LOCAL_KEYS);
-		if (!seedPhrase) return;
-		update('localKeys', { seedPhrase, accountId, accessPublic, accessSecret });
+        console.log(loadKeys)
+		const { seedPhrase, accessAccountId, accessPublic, accessSecret, signedIn } = get(LOCAL_KEYS);
+		if (!accessAccountId) return;
+		const { secretKey } = parseSeedPhrase(seedPhrase);
+		const keyPair = KeyPair.fromString(secretKey);
+		const guestAccount = createGuestAccount(near, keyPair);
+        let guest
+        try {
+            guest = await guestAccount.viewFunction(contractName, 'get_guest', { public_key: accessPublic })
+            console.log(guest)
+        } catch (e) {
+            console.warn(e)
+        }
+        
+		update('localKeys', { seedPhrase, accessAccountId, accessPublic, accessSecret, signedIn, balance: guest.balance });
 	};
 
-	const getNewAccount = async () => {
-		update('loading', true);
-		const { seedPhrase, publicKey } = generateSeedPhrase();
-		const accountId = Buffer.from(PublicKey.from(publicKey).data).toString('hex');
-		const keyPair = await getNewAccessKey();
-		if (keyPair) {
-			const keys = {
-				seedPhrase,
-				accountId,
-				accessPublic: keyPair.publicKey.toString(),
-				accessSecret: keyPair.secretKey
-			};
-			update('localKeys', keys);
-			set(LOCAL_KEYS, keys);
-		} else {
-			alert('Something happened. Try "Get New App Key" again!');
+	const handleCreateGuest = async () => {
+        if (localKeys && window.confirm('Sign in as: ' + localKeys.accessAccountId + ' or CANCEL to sign in with a new username. WARNING you will lose access to the account: ' + localKeys.accessAccountId)) {
+			return signIn();
 		}
-		update('loading', false);
-	};
-
-	const getNewAccessKey = async (selfUpdate = false) => {
+        const account_id = username + '.' + contractName
+        const contractAccount = new Account(near.connection, contractName)
+        try {
+            await contractAccount.viewFunction(contractName, 'get_account', { account_id })
+            return alert('username taken')
+        } catch (e) {
+            console.warn(e)
+        }
 		update('loading', true);
-		const keyPair = KeyPair.fromRandom('ed25519');
+		const { seedPhrase, publicKey, secretKey } = generateSeedPhrase();
+        let public_key = publicKey.toString()
 		// WARNING NO RESTRICTION ON THIS ENDPOINT
 		const result = await postJson({
-			url: 'http://localhost:3000/add-key',
-			data: { publicKey: keyPair.publicKey.toString() }
-        });
+			url: 'http://localhost:3000/add-guest',
+			data: { 
+                account_id,
+                public_key
+            }
+		});
 		if (result && result.success) {
-			const isValid = await checkAccessKey(keyPair);
-			if (isValid) {
-				if (!localKeys || !selfUpdate) {
-                    update('loading', false);
-					return keyPair;
-				}
-				localKeys.accessPublic = keyPair.publicKey.toString(),
-				localKeys.accessSecret = keyPair.secretKey;
-				update('localKeys', localKeys);
-				set(LOCAL_KEYS, localKeys);
-			}
+			try {
+                await contractAccount.viewFunction(contractName, 'get_account', { account_id })
+                const keys = {
+					seedPhrase,
+                    accessAccountId: account_id,
+					accessPublic: publicKey.toString(),
+					accessSecret: secretKey,
+					signedIn: true,
+				};
+				update('localKeys', keys);
+				set(LOCAL_KEYS, keys);
+            } catch (e) {
+                update('loading', false);
+                return alert('error creating guest account')
+            }
 		}
-        update('loading', false);
+		update('loading', false);
 		return null;
 	};
 
-	const checkAccessKey = async (key) => {
-		const account = createAccessKeyAccount(near, key);
-		const result = await postSignedJson({
-			url: 'http://localhost:3000/has-access-key',
-			contractName,
-			account
-		});
-		return result && result.success;
+	const signIn = () => {
+		localKeys.signedIn = true;
+		update('localKeys', localKeys);
+		set(LOCAL_KEYS, localKeys);
 	};
 
-	const deleteAccessKeys = async () => {
-		update('loading', true);
-		// WARNING NO RESTRICTION ON THIS ENDPOINT
-		const result = await fetch('http://localhost:3000/delete-access-keys').then((res) => res.json());
-		if (result && result.success) {
-			update('localKeys', null);
-			del(LOCAL_KEYS);
-		}
-		update('loading', false);
+	const signOut = () => {
+		localKeys.signedIn = false;
+		update('localKeys', localKeys);
+		set(LOCAL_KEYS, localKeys);
+	};
+
+    const handleUpgrade = async () => {
+        /// the new full access key
+        const { seedPhrase, publicKey } = generateSeedPhrase();
+        if (!window.prompt('Keep this somewhere safe!', seedPhrase)) {
+            return alert('you have to copy the seed phrase down somewhere')
+        }
+        console.log('seedPhrase', seedPhrase)
+        /// additional access key so upgraded user doens't have to sign in with wallet
+        const { seedPhrase: accessSeed, secretKey: accessSecret, publicKey: accessPublic } = generateSeedPhrase();
+
+        /// current guest credentials
+        const { accessAccountId: accountId, seedPhrase: guestSeed } = localKeys
+        /// prep contract and args
+        const guestAccount = createGuestAccount(near, KeyPair.fromString(localKeys.accessSecret));
+        update('loading', true);
+        const public_key = publicKey.toString();
+        try {
+            await guestAccount.functionCall(contractName, 'upgrade_guest', {
+                public_key,
+                access_key: accessPublic,
+                method_names: ''
+            }, GAS);
+
+            /// wallet hijacking
+            set(`near-api-js:keystore:${accountId}:default`, accessSecret);
+            set(`undefined_wallet_auth_key`, `{"accountId":"${accountId}","allKeys":["${accessPublic}"]}`);
+            /// set to access key pair, still a guest 
+            /// e.g. don't have to get full access key secret from app (can use wallet /extention)
+            const accessKeyPair = KeyPair.fromString(accessSecret)
+            near.connection.signer.keyStore.setKey(networkId, accountId, accessKeyPair);
+            signOut()
+            update('loading', false);
+            /// because we hacked the wallet
+            window.location.reload();
+        } catch (e) {
+            console.warn(e);
+            alert('upgrading failed')
+        }
+    };
+
+	const deleteAccessKeys = window.deleteUsers = async () => {
+		del(LOCAL_KEYS);
 	};
 
 	return <>
-		<h3>Your Local Guest Account</h3>
-        <p>The seed phrase and associated implicitAccountId do not have to be revealed to the application. This is similar to a JWT, where only the implicitAccountId may need to be known by the app. The seed phrase is presented only for convenience.</p>
-		{ localKeys && localKeys.seedPhrase ?
+		{ localKeys && localKeys.signedIn ?
 			<>
-				<p><b>Seed Phrase:</b> {localKeys.seedPhrase}</p>
-				<p><b>Implicit Account Id:</b> {localKeys.accountId}</p>
-				
-                <h3>Current App Key</h3>
-                <p>An app key with a limited allowance of NEAR to spend on gas fees has been added to the app's contract account. This will allow a user to "mint" a message and set a price, without having NEAR tokens.</p>
-                <p>This calls an endpoint on the server (see /server/app.js) that will add the access key using the contract account's master key.</p>
-                <p>{localKeys.accessPublic}</p>
-				<button onClick={() => getNewAccessKey(true)}>Get New App Key</button>(warning removes current message for sale, if there is one)
-                <p>Each app key can be associated with one message for sale.</p>
+				<p>Balance: {formatNearAmount(localKeys.balance, 2) || '0'} N</p>
+				{
+					localKeys.balance && localKeys.balance !== '0' && <>
+						<button onClick={() => handleUpgrade()}>Upgrade Account</button>
+					</>
+				}
 				<br />
-				<button onClick={() => deleteAccessKeys()}>Remove Account</button>(warning removes all access keys from contract, for you and everyone else)
+				<button onClick={() => signOut()}>Sign Out</button>
 			</> :
-			<>
-				<p>Creates a seed phrase + access key to interact with the app. Normally you would set up your seed phrase with a wallet and the app would add an access key.</p>
-				<button onClick={() => getNewAccount()}>Get New Account</button>
-			</>
+
+            <div>
+            <input placeholder="username" value={username} onChange={(e) => setUsername(e.target.value)} /> 
+            <br />
+			<button onClick={() => handleCreateGuest()}>Create Guest Account</button>
+            </div>
 		}
+		{/* <button onClick={() => deleteAccessKeys()}>DELETE ALL ACCESS KEY ACCOUNTS</button> */}
 	</>;
 };
 
