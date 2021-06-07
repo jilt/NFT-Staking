@@ -1,231 +1,148 @@
-use std::convert::TryFrom;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::{LookupMap};
-use near_sdk::json_types::{U128, ValidAccountId};
+use near_sdk::collections::{LookupMap, UnorderedMap, UnorderedSet};
+use near_sdk::json_types::{ValidAccountId, U128, U64};
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, ext_contract, near_bindgen, AccountId, Gas, Balance, PanicOnDefault, Promise, PromiseResult};
+use near_sdk::{
+    assert_one_yocto, env, ext_contract, near_bindgen, AccountId, Balance, Gas, PanicOnDefault,
+    Promise, PromiseOrValue, CryptoHash, BorshStorageKey,
+};
+use std::cmp::min;
+use std::collections::HashMap;
 
-#[global_allocator]
-static ALLOC: near_sdk::wee_alloc::WeeAlloc<'_> = near_sdk::wee_alloc::WeeAlloc::INIT;
+use crate::external::*;
+use crate::internal::*;
+use crate::sale::*;
+use near_sdk::env::STORAGE_PRICE_PER_BYTE;
 
-const GAS_FOR_RESOLVE_TRANSFER: Gas = 10_000_000_000_000;
-const GAS_FOR_NFT_TRANSFER_CALL: Gas = 25_000_000_000_000 + GAS_FOR_RESOLVE_TRANSFER;
+mod external;
+mod ft_callbacks;
+mod internal;
+mod nft_callbacks;
+mod sale;
+mod sale_views;
+
+near_sdk::setup_alloc!();
+
+// TODO check seller supports storage_deposit at ft_token_id they want to post sale in
+
 const NO_DEPOSIT: Balance = 0;
-const MIN_ATTACHED_DEPOSIT: u128 = 100_000_000_000_000_000_000_000;
-pub type TokenId = String;
-pub type ContractAndTokenId = String;
+const STORAGE_PER_SALE: u128 = 1000 * STORAGE_PRICE_PER_BYTE;
+static DELIMETER: &str = "||";
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
-#[serde(crate = "near_sdk::serde")]
-pub struct Sale {
-    pub owner_id: AccountId,
-    pub approval_id: u64,
-    pub beneficiary: AccountId,
-    pub price: U128,
-    pub deposit: Balance,
-    pub processing: bool,
-}
+pub type TokenId = String;
+pub type TokenType = Option<String>;
+pub type FungibleTokenId = AccountId;
+pub type ContractAndTokenId = String;
+// TODO: Capital U128
+pub type Payout = HashMap<AccountId, U128>;
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Contract {
     pub owner_id: AccountId,
-    pub sales: LookupMap<ContractAndTokenId, Sale>,
+    pub sales: UnorderedMap<ContractAndTokenId, Sale>,
+    pub by_owner_id: LookupMap<AccountId, UnorderedSet<ContractAndTokenId>>,
+    pub by_nft_contract_id: LookupMap<AccountId, UnorderedSet<TokenId>>,
+    pub by_nft_token_type: LookupMap<AccountId, UnorderedSet<ContractAndTokenId>>,
+    pub ft_token_ids: UnorderedSet<AccountId>,
+    pub storage_deposits: LookupMap<AccountId, Balance>,
+}
+
+/// Helper structure to for keys of the persistent collections.
+#[derive(BorshStorageKey, BorshSerialize)]
+pub enum StorageKey {
+    Sales,
+    ByOwnerId,
+    ByOwnerIdInner { account_id_hash: CryptoHash },
+    ByNFTContractId,
+    ByNFTContractIdInner { account_id_hash: CryptoHash },
+    ByNFTTokenType,
+    ByNFTTokenTypeInner { token_type_hash: CryptoHash },
+    FTTokenIds,
+    StorageDeposits,
 }
 
 #[near_bindgen]
 impl Contract {
     #[init]
-    pub fn new(owner_id: ValidAccountId) -> Self {
-        assert!(!env::state_exists(), "Already initialized");
-        Self {
+    pub fn new(owner_id: ValidAccountId, ft_token_ids:Option<Vec<ValidAccountId>>) -> Self {
+        let mut this = Self {
             owner_id: owner_id.into(),
-            sales: LookupMap::new(b"s".to_vec()),
-        }
-    }
-
-    #[payable]
-    pub fn add_sale(&mut self, token_contract_id: ValidAccountId, token_id: String, price: U128, owner_id: ValidAccountId, approval_id: u64, beneficiary: Option<ValidAccountId>) {
-        let deposit = env::attached_deposit();
-        assert!(deposit >= MIN_ATTACHED_DEPOSIT, "Must attach at least 0.1 NEAR as deposit to list sale");
-        let contract_id: AccountId = token_contract_id.into();
+            sales: UnorderedMap::new(StorageKey::Sales),
+            by_owner_id: LookupMap::new(StorageKey::ByOwnerId),
+            by_nft_contract_id: LookupMap::new(StorageKey::ByNFTContractId),
+            by_nft_token_type: LookupMap::new(StorageKey::ByNFTTokenType),
+            ft_token_ids: UnorderedSet::new(StorageKey::FTTokenIds),
+            storage_deposits: LookupMap::new(StorageKey::StorageDeposits),
+        };
+        // support NEAR by default
+        this.ft_token_ids.insert(&"near".to_string());
         
-        // if you are making a sale on someone's behalf and you want to escrow the funds (guest accounts)
-        let mut sale_beneficiary = owner_id.clone();
-        if let Some(beneficiary) = beneficiary {
-            sale_beneficiary = beneficiary;
+        if let Some(ft_token_ids) = ft_token_ids {
+            for ft_token_id in ft_token_ids {
+                this.ft_token_ids.insert(ft_token_id.as_ref());
+            }
         }
 
-        env::log(format!("add_sale for owner: {}", owner_id.clone().as_ref()).as_bytes());
-        
-        self.sales.insert(&format!("{}:{}", contract_id, token_id), &Sale{
-            owner_id: owner_id.into(),
-            approval_id,
-            beneficiary: sale_beneficiary.into(),
-            price,
-            deposit,
-            processing: false,
-        });
-    }
-    
-    pub fn update_price(&mut self, token_contract_id: ValidAccountId, token_id: String, price: U128) {
-        let contract_id: AccountId = token_contract_id.into();
-        let contract_and_token_id = format!("{}:{}", contract_id, token_id);
-        let mut sale = self.sales.remove(&contract_and_token_id).expect("No sale");
-        assert_eq!(
-            env::predecessor_account_id(),
-            sale.owner_id,
-            "Must be sale owner"
-        );
-        sale.price = price;
-        self.sales.insert(&contract_and_token_id, &sale);
+        this
     }
 
-    /// should be able to pull a sale without yocto redirect to wallet?
-    pub fn remove_sale(&mut self, token_contract_id: ValidAccountId, token_id: String) {
-        let contract_id: AccountId = token_contract_id.into();
-        let sale = self.sales.remove(&format!("{}:{}", contract_id, token_id)).expect("No sale");
-        assert_eq!(
-            env::predecessor_account_id(),
-            sale.owner_id,
-            "Must be sale owner"
-        );
-        Promise::new(sale.owner_id).transfer(sale.deposit);
+    /// only owner 
+    pub fn add_ft_token_ids(&mut self, ft_token_ids: Vec<ValidAccountId>) -> Vec<bool> {
+        self.assert_owner();
+        let mut added = vec![];
+        for ft_token_id in ft_token_ids {
+            added.push(self.ft_token_ids.insert(ft_token_id.as_ref()));
+        }
+        added
     }
+
+    /// TODO remove token (should check if sales can complete even if owner stops supporting token type)
 
     #[payable]
-    pub fn purchase(&mut self, token_contract_id: ValidAccountId, token_id: String) -> Promise {
-        let contract_id: AccountId = token_contract_id.clone().into();
-        let contract_and_token_id = format!("{}:{}", contract_id, token_id);
-        let mut sale = self.sales.get(&contract_and_token_id).expect("No sale");
-        assert_eq!(sale.processing, false, "Sale is currently in progress");
+    pub fn storage_deposit(&mut self, account_id: Option<ValidAccountId>) {
+        let storage_account_id = account_id
+            .map(|a| a.into())
+            .unwrap_or_else(env::predecessor_account_id);
         let deposit = env::attached_deposit();
-        let price = sale.price.into();
-        assert_eq!(
-            env::attached_deposit(),
-            price,
-            "Must pay exactly the sale amount {}", deposit
+        assert!(
+            deposit >= STORAGE_PER_SALE,
+            "Requires minimum deposit of {}",
+            STORAGE_PER_SALE
         );
-        sale.processing = true;
-        self.sales.insert(&contract_and_token_id, &sale);
-        let predecessor = env::predecessor_account_id();
-        let receiver_id = ValidAccountId::try_from(predecessor.clone()).unwrap();
-        let owner_id = ValidAccountId::try_from(sale.owner_id).unwrap();
-        let memo: String = "Sold by Matt Market".to_string();
-        // call NFT contract transfer call function
-        ext_transfer::nft_transfer(
-            receiver_id,
-            token_id.clone(),
-            owner_id, // who added sale must still be token owner
-            memo,
-            &contract_id,
-            1,
-            env::prepaid_gas() - GAS_FOR_NFT_TRANSFER_CALL,
-        ).then(ext_self::nft_resolve_purchase(
-            contract_id,
-            token_id,
-            predecessor,
-            &env::current_account_id(),
-            NO_DEPOSIT,
-            GAS_FOR_RESOLVE_TRANSFER,
-        ))
+        let mut balance: u128 = self.storage_deposits.get(&storage_account_id).unwrap_or(0);
+        balance += deposit;
+        self.storage_deposits.insert(&storage_account_id, &balance);
     }
-
-    /// self callback
-
-    pub fn nft_resolve_purchase(
-        &mut self,
-        token_contract_id: AccountId,
-        token_id: TokenId,
-        buyer_id: AccountId,
-    ) -> bool {
-        env::log(format!("Promise Result {:?}", env::promise_result(0)).as_bytes());
-        let contract_and_token_id = format!("{}:{}", token_contract_id, token_id);
-        // value is nothing, checking if nft_transfer was Successful promise execution
-        if let PromiseResult::Successful(_value) = env::promise_result(0) {
-            // pay seller and remove sale
-            let sale = self.sales.remove(&contract_and_token_id).expect("No sale");
-            Promise::new(sale.beneficiary).transfer(u128::from(sale.price) + sale.deposit);
-            return true;
-        }
-        // no promise result, refund buyer and update sale state to not processing
-        let mut sale = self.sales.get(&contract_and_token_id).expect("No sale");
-        sale.processing = false;
-        self.sales.insert(&contract_and_token_id, &sale);
-        Promise::new(buyer_id).transfer(u128::from(sale.price));
-        return false;
-    }
-
-    /// view methods
-
-    pub fn get_sale(&self, token_contract_id: ValidAccountId, token_id: String) -> Sale {
-        let contract_id: AccountId = token_contract_id.into();
-        self.sales.get(&format!("{}:{}", contract_id, token_id.clone())).expect("No sale")
-    }
-}
-
-#[ext_contract(ext_self)]
-trait ResolvePurchase {
-    fn nft_resolve_purchase(
-        &mut self,
-        token_contract_id: AccountId,
-        token_id: TokenId,
-        buyer_id: AccountId,
-    ) -> Promise;
-}
-
-#[ext_contract(ext_transfer)]
-trait ExtTransfer {
-    fn nft_transfer(
-        &mut self,
-        receiver_id: ValidAccountId,
-        token_id: TokenId,
-        enforce_owner_id: ValidAccountId,
-        memo: String,
-    );
-}
-
-/// approval callbacks from NFT contracts 
-
-trait NonFungibleTokenApprovalsReceiver {
-    fn nft_on_approve(
-        &mut self,
-        token_contract_id: ValidAccountId,
-        token_id: TokenId,
-        owner_id: ValidAccountId,
-        approval_id: u64,
-        msg: Option<String>,
-    ) -> bool;
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(crate = "near_sdk::serde")]
-pub struct OnApprovalMsg {
-    pub beneficiary: AccountId,
-    pub price: U128,
-}
-
-#[near_bindgen]
-impl NonFungibleTokenApprovalsReceiver for Contract {
 
     #[payable]
-    fn nft_on_approve(
-        &mut self,
-        token_contract_id: ValidAccountId,
-        token_id: TokenId,
-        owner_id: ValidAccountId,
-        approval_id: u64,
-        msg: Option<String>,
-    ) -> bool {
-        let contract: AccountId = token_contract_id.clone().into();
-        assert_eq!(env::predecessor_account_id(), contract, "Approval callbacks need to be called by the NFT Contract");
-        if let Some(msg) = msg {
-            let msg_data: OnApprovalMsg = near_sdk::serde_json::from_str(&msg).expect("Valid OnApprovalMsg");
-            let beneficiary = ValidAccountId::try_from(msg_data.beneficiary).expect("Valid account id passd in msg to nft_on_approve_account_id");
-            self.add_sale(token_contract_id, token_id, msg_data.price.into(), owner_id, approval_id, Some(beneficiary));
-            true
+    pub fn storage_withdraw(&mut self) {
+        assert_one_yocto();
+        let owner_id = env::predecessor_account_id();
+        let mut amount = self.storage_deposits.remove(&owner_id).unwrap_or(0);
+        let sales = self.by_owner_id.get(&owner_id);
+        let len = if sales.is_some() {
+            sales.unwrap().len()
         } else {
-            false
+            0
+        };
+        amount -= u128::from(len) * STORAGE_PER_SALE;
+        if amount > 0 {
+            Promise::new(owner_id).transfer(amount);
         }
+    }
+
+    /// views
+
+    pub fn supported_ft_token_ids(&self) -> Vec<AccountId> {
+        self.ft_token_ids.to_vec()
+    }
+
+    pub fn storage_amount(&self) -> U128 {
+        U128(STORAGE_PER_SALE)
+    }
+
+    pub fn storage_paid(&self, account_id: ValidAccountId) -> U128 {
+        U128(self.storage_deposits.get(account_id.as_ref()).unwrap_or(0))
     }
 }
