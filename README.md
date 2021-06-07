@@ -6,11 +6,17 @@ A PoC backbone for NFT Marketplaces on NEAR Protocol.
 
 ## ToDo:
 - [ ] add stNEAR as a trading ft
-- [ ] implement [Narwallet](https://narwallets.github.io/meta-pool/) and Varda Vault NEARNFT wallet for unlockable content
+- [ ] implement [Narwallet](https://narwallets.github.io/meta-pool/) with Varda Vault NEARNFT dispay for unlockable content
+
+## Varda strategy game and staking mechanics explained
 
 [![Varda strategy game and staking mechanics explained](https://img.youtube.com/vi/xM8EhLeGOEI/0.jpg)](https://www.youtube.com/watch?v=xM8EhLeGOEI)
 
+## Varda cultural reference
+
 [![Varda cultural reference](https://img.youtube.com/vi/6rOkVq8qPrs/0.jpg)](https://www.youtube.com/watch?v=6rOkVq8qPrs)
+
+[Varda Tokenomics](https://varda-vision.medium.com/)
 
 ## Progress:
 - [x] basic purchase of NFT with FT
