@@ -1,4 +1,4 @@
-# NFT Market Reference Implementation
+# Varda NFT market implementation
 
 A PoC backbone for NFT Marketplaces on NEAR Protocol.
 
