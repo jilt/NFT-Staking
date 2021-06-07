@@ -1,6 +1,6 @@
 # Varda NFT market implementation
 
-A PoC backbone for NFT Marketplaces on NEAR Protocol.
+Using the PoC backbone for NFT Marketplaces on NEAR Protocol.
 
 [Reference](https://nomicon.io/Standards/NonFungibleToken/README.html)
 
