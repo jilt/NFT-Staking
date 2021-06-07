@@ -1,23 +1,65 @@
-# NFT Launcher & Easy User Onboarding
+# NFT Market Reference Implementation
 
-## UPDATE
+A PoC backbone for NFT Marketplaces on NEAR Protocol.
 
-For the lastest standard NFT contract and a Marketplace example app, please use this repo: [nft-market](https://github.com/near-apps/nft-market).
+[Reference](https://nomicon.io/Standards/NonFungibleToken/README.html)
 
-If you are serious about launching your NFT project on NEAR, [nft-market](https://github.com/near-apps/nft-market) is the best repo.
+## ToDo:
+- [ ] add stNEAR as a trading ft
+- [ ] implement [Narwallet](https://narwallets.github.io/meta-pool/) and Varda Vault NEARNFT wallet for unlockable content
 
-You can combine the user onboarding techniques from nft-launcher with [nft-market](https://github.com/near-apps/nft-market).
+[![Varda strategy game and staking mechanics explained](https://img.youtube.com/vi/xM8EhLeGOEI/0.jpg)](https://www.youtube.com/watch?v=xM8EhLeGOEI)
 
-## End 
+[![Varda cultural reference](https://img.youtube.com/vi/6rOkVq8qPrs/0.jpg)](https://www.youtube.com/watch?v=6rOkVq8qPrs)
+
+## Progress:
+- [x] basic purchase of NFT with FT
+- [x] demo pay out royalties (FTs and NEAR)
+- [x] test and determine standards for markets (best practice?) to buy/sell NFTs (finish standard) with FTs (already standard)
+- [x] demo some basic auction types, secondary markets and 
+- [x] frontend example
+- [x] first pass / internal audit
+- [ ] connect with bridged tokens e.g. buy and sell with wETH/nDAI (or whatever we call these)
+- [ ] add ability to migrate NFT to ethereum blockchain using rainbowbridge/aurora
+
+## Notes:
+
+High level diagram of NFT sale on Market using Fungible Token:
+![image](https://user-images.githubusercontent.com/321340/113903355-bea71e80-9785-11eb-8ab3-9c2f0d23466f.png)
+
+Remove the FT steps for NEAR transfers (but nft_transfer_payout and resolve_purchase still the same).
+
+Differences from `nft-simple` NFT standard reference implementation:
+- anyone can mint an NFT
+- Optional token_type
+- capped supply by token_type
+- lock transfers by token_token
+- enumerable.rs
+
+## Working
+
+**Frontend App Demo: `/test/app.test.js/`**
+- install, deploy, test `yarn && yarn test:deploy`
+- run app - `yarn start`
+
+**App Tests: `/test/app.test.js/`**
+- install, deploy, test `yarn && yarn test:deploy`
+- if you update contracts - `yarn test:deploy`
+- if you update tests only - `yarn test`
+
+# NFT Specific Notes
 
 Associated Video Demos (most recent at top)
 
+[![NEAR Protocol - Demo NFT Marketplace Walkthough](https://img.youtube.com/vi/AevmMAtkIr4/0.jpg)](https://www.youtube.com/watch?v=AevmMAtkIr4)
+
+[![Live App Review 19 - NFT Marketplace with Fungible Token Transfers and Royalty Distribution](https://img.youtube.com/vi/sGTC3rs8OJQ/0.jpg)](https://youtu.be/sGTC3rs8OJQ)
+
+Some additional ideas around user onboarding:
+
 [![NEAR Protocol - NFT Launcher & Easy User Onboarding Demo - Hackathon Starter Kit!](https://img.youtube.com/vi/59Lzt1PFF6I/0.jpg)](https://www.youtube.com/watch?v=59Lzt1PFF6I)
 
-[![Live App Review 14 - NFT Launcher Contract and Tests (Part 1)](https://img.youtube.com/vi/AtAa8hMRueY/0.jpg)](https://youtu.be/AtAa8hMRueY)
-
-
-# Quickstart
+# Detailed Installation / Quickstart
 
 #### If you don't have Rust
 Install Rust https://rustup.rs/
@@ -275,6 +317,3 @@ When the button is clicked, the component HelloMessage will not re-render, it's 
 Reference:
 - https://reactjs.org/docs/context.html
 - https://dmitripavlutin.com/use-react-memo-wisely/
-
-
-
