@@ -1,42 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <!-- Mobile Specific Meta -->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Always force latest IE rendering engine or request Chrome Frame -->
-        <!--[if IE]>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <![endif]-->
-        <!-- Meta Description -->
-        <meta name="description" content="The Varda Vault is built to attach or redeem unlockable content on the NEAR NFT ecosystem">
-        <!-- Meta Keyword -->
-        <meta name="keywords" content="unlockable, NFT, nearprotocol, blockchain, redeem, lock, content">
-	<!-- twitter -->
-	<meta name="twitter:title" content="The Varda Vault"/>
-	    <meta name="twitter:card" content="summary_large_image"/>
-	    <meta name="twitter:site" content="@jeeltcraft"/>
-	    <meta name="twitter:description" content="The Varda Vault is built to attach or redeem unlockable content on the NEAR NFT ecosystem"/>
-	    <meta name="twitter:image" content="https://www.varda.vision/img/twitter-preview.jpg"/>
-        <!-- meta character set -->
-        <meta charset="utf-8">
+<html lang=en >
 
-        <!-- Site Title -->
-        <title>The Varda Vault</title>
-        
-		<link rel="shortcut icon" type="image/x-icon" href="https://www.varda.vision/img/icons/favicon.png">
-      
-      <style>
-      @import url("https://fonts.googleapis.com/css?family=Source+Code+Pro");
+<head>
 
+  <meta charset=UTF-8>
+  
+<link rel=apple-touch-icon type=image/png href=https://cpwebassets.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png />
+<meta name=apple-mobile-web-app-title content=CodePen>
+
+<link rel=shortcut icon type=image/x-icon href=https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico />
+
+<link rel=mask-icon type= href=https://cpwebassets.codepen.io/assets/favicon/logo-pin-8f3771b1072e3c38bd662872f6b673a722f4b3ca2421637d5596661b4e2132cc.svg color=#111 />
+
+
+  <title>CodePen - Mintbase store tokens</title>
+  
+  
+  
+  
+<style>
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
 .json {
-  font-family: "Source Code Pro", monospace;
+  font-family: Source Code Pro, monospace;
   font-size: 16px;
-
-  & > {
-    .json__item {
-      display: block;
-    }
-  }
+}
+.json > .json__item {
+  display: block;
 }
 
 .json__item {
@@ -50,46 +39,38 @@
   cursor: pointer;
   overflow: hidden;
   position: relative;
-
-  &::before {
-    content: "+";
-    position: absolute;
-    left: 5px;
-  }
-
-  &::after {
-    background-color: lightgrey;
-    content: "";
-    height: 100%;
-    left: 9px;
-    position: absolute;
-    top: 26px;
-    width: 1px;
-  }
-
-  &:hover {
-    & > .json__key,
-    & > .json__value {
-      text-decoration: underline;
-    }
-  }
+}
+.json__item--collapsible::before {
+  content: +;
+  position: absolute;
+  left: 5px;
+}
+.json__item--collapsible::after {
+  background-color: lightgrey;
+  content: ;
+  height: 100%;
+  left: 9px;
+  position: absolute;
+  top: 26px;
+  width: 1px;
+}
+.json__item--collapsible:hover > .json__key, .json__item--collapsible:hover > .json__value {
+  text-decoration: underline;
 }
 
 .json__toggle {
   display: none;
-
-  &:checked ~ .json__item {
-    display: block;
-  }
+}
+.json__toggle:checked ~ .json__item {
+  display: block;
 }
 
 .json__key {
   color: darkblue;
   display: inline;
-
-  &::after {
-    content: ": ";
-  }
+}
+.json__key::after {
+  content: : ;
 }
 
 .json__value {
@@ -108,17 +89,34 @@
   color: red;
 }
 </style>
-</header>
-<body>
-<h1>Show tokens by mintbase store</h1>
-<form onsubmit="run();">
+
+  <script>
+  window.console = window.console || function(t) {};
+</script>
+
+  
+  
+  <script type=text/javasccript>
+  if (document.location.search.match(/type=embed/gi)) {
+    window.parent.postMessage(resize, *);
+  }
+</script>
+
+
+</head>
+
+<body translate=no >
+  <h1>Show all Mintbase store tokens</h1>
+<form onsubmit=run(); return false;>
     Store: 
-    <input class="store" type="textbox">
-    <input type="submit" value="Submit">
+    <input class=store type=textbox value=nearverse>
+    <input type=submit value=Submit>
 </form>
-<div class="target" />
-  <script type="text-javascript">
-  const run = async () => {
+<div class=target />
+
+  
+      <script id=rendered-js >
+const run = async () => {
   var store = document.querySelector('.store').value;
 fetch("https://mintbase-mainnet.hasura.app/v1/graphql", {
   "headers": {
@@ -213,6 +211,10 @@ function jsonViewer(json, collapsible=false) {
     
     return parseObject(json);
 };
+    </script>
 
-  </script>
+  
+
 </body>
+
+</html>
