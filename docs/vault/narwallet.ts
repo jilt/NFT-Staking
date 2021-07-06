@@ -1,6 +1,6 @@
-import {WalletInterface, EventHandler} from "../wallet-interface"
-import {BatchTransaction, FunctionCall, Transfer} from "../batch-transaction"
-import {U64String,U128String,SemVer} from "../util"
+import {WalletInterface, EventHandler} from "./wallet-interface"
+import {BatchTransaction, FunctionCall, Transfer} from "./batch-transaction"
+import {U64String,U128String,SemVer} from "./util"
 
 //-------------------------------
 // WalletInterface implementation
