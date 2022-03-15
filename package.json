@@ -2,15 +2,20 @@
     "name": "react-parcel-boilerplate",
     "version": "1.0.0",
     "description": "React Parcel Boilerplate",
-    "author": "Matt Lockyer",
+    "author": "Matt Lockyer and Jilt",
     "license": "ISC",
     "dependencies": {
+        "@babel/core": "^7.17.5",
+        "@babel/preset-env": "^7.16.11",
+        "@react-native-community/art": "^1.2.0",
         "bn": "^1.0.5",
         "copy-to-clipboard": "^3.3.1",
         "near-api-js": "^0.41.0",
         "near-seed-phrase": "^0.1.0",
         "react": "^17.0.1",
-        "react-dom": "^17.0.1"
+        "react-dom": "^17.0.1",
+        "react-native": "^0.67.3",
+        "react-native-neomorph-shadows": "^1.1.2"
     },
     "devDependencies": {
         "@parcel/transformer-image": "2.0.0-nightly.2303",
@@ -34,7 +39,6 @@
         "build:contracts": "cd contracts/nft-simple && ./build.sh && cd ../.. && cd contracts/market-simple && ./build.sh && cd ../.. && cd contracts/ft && ./build.sh && cd ../..",
         "patch:config": "node ./utils/patch-config.js",
         "test": "cross-env REACT_APP_ENV=dev jest app.test.js --useStderr",
-        "prestart": "rm -rf ./parcel-cache",
         "start": "cross-env REACT_APP_ENV=dev parcel src/index.html --open",
         "start:deploy": "yarn patch:deploy-config && cross-env REACT_APP_ENV=dev REACT_APP_API_HELPER=true parcel src/index.html --open",
         "fix": "eslint src/ test/ --fix",

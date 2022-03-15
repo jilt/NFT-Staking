@@ -28,7 +28,7 @@ impl Contract {
         let mut total_perpetual = 0;
         // user added perpetual_royalties (percentage paid with every transfer)
         if let Some(perpetual_royalties) = perpetual_royalties {
-            assert!(perpetual_royalties.len() < 7, "Cannot add more than 6 perpetual royalty amounts");
+            assert!(perpetual_royalties.len() < 6, "Cannot add more than 5 perpetual royalty amounts");
             for (account, amount) in perpetual_royalties {
                 royalty.insert(account, amount);
                 total_perpetual += amount;
