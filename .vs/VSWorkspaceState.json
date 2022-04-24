@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\contracts",
+    "\\contracts\\market-simple",
+    "\\contracts\\nft-simple",
+    "\\contracts\\nft-simple\\res",
+    "\\contracts\\nft-simple\\src",
+    "\\src",
+    "\\src\\components",
+    "\\src\\utils",
+    "\\test"
+  ],
+  "SelectedNode": "\\contracts\\nft-simple\\src\\enumeration.rs",
+  "PreviewInSolutionExplorer": false
+}

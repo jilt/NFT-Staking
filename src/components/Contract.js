@@ -14,6 +14,8 @@ const {
 export const Contract = ({ near, update, account }) => {
 	if (!account) return <p>Please connect your NEAR Wallet</p>;
 
+	const [title, setTitle] = useState('');
+	const [description, setDescription] = useState('');
 	const [media, setMedia] = useState('');
 	const [validMedia, setValidMedia] = useState('');
 	const [royalties, setRoyalties] = useState({});
@@ -26,12 +28,12 @@ export const Contract = ({ near, update, account }) => {
 			return;
 		}
 
-		// shape royalties data for minting and check max is < 20%
+		// shape royalties data for minting and check max is < 30%
 		let perpetual_royalties = Object.entries(royalties).map(([receiver, royalty]) => ({
 			[receiver]: royalty * 100
 		})).reduce((acc, cur) => Object.assign(acc, cur), {});
-		if (Object.values(perpetual_royalties).reduce((a, c) => a + c, 0) > 2000) {
-			return alert('Cannot add more than 20% in perpetual NFT royalties when minting');
+		if (Object.values(perpetual_royalties).reduce((a, c) => a + c, 0) > 3000) {
+			return alert('Cannot add more than 30% in perpetual NFT royalties when minting');
 		}
 		
 		update('loading', true);
@@ -51,6 +53,8 @@ export const Contract = ({ near, update, account }) => {
 
 	return <>
 		<h4>Mint Something</h4>
+		<input className="full-width" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+		<input className="full-width" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
 		<input className="full-width" placeholder="Image Link" value={media} onChange={(e) => setMedia(e.target.value)} />
 		<img src={media} onLoad={() => setValidMedia(true)} onError={() => setValidMedia(false)} />
 		

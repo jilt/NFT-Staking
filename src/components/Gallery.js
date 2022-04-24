@@ -138,7 +138,7 @@ export const Gallery = ({ app, update, contractAccount, account, loading, dispat
 			});
 		}
 		
-		const tokens = await contractAccount.viewFunction(contractId, 'nft_tokens_batch', {
+		const tokens = await contractAccount.viewFunction(contractId, 'nft_tokens', {
 			token_ids: sales.filter(({ nft_contract_id }) => nft_contract_id === contractId).map(({ token_id }) => token_id)
 		});
 		// merge sale listing with nft token data
