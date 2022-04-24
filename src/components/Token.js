@@ -34,8 +34,8 @@ export const Token = ({
 		});
 		const actions = JSON.stringify({
 			botMap: {
-				'og:title': 'NFTs on NEAR',
-				'og:description': 'Check out this NFT on NEAR!',
+				'og:title': { field: 'title' },
+				'og:description': { field: 'description' },
 				'og:image': { field: 'metadata.media' }
 			},
 			redirect: encodeURIComponent(`${window.location.origin}${window.location.pathname}?t=${token_id}`),

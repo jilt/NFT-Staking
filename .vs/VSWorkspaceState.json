@@ -3,14 +3,15 @@
     "",
     "\\contracts",
     "\\contracts\\market-simple",
+    "\\contracts\\market-simple\\src",
     "\\contracts\\nft-simple",
-    "\\contracts\\nft-simple\\res",
     "\\contracts\\nft-simple\\src",
     "\\src",
     "\\src\\components",
     "\\src\\utils",
-    "\\test"
+    "\\test",
+    "\\utils"
   ],
-  "SelectedNode": "\\contracts\\nft-simple\\src\\enumeration.rs",
+  "SelectedNode": "\\src\\components\\Contract.js",
   "PreviewInSolutionExplorer": false
 }

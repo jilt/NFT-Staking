@@ -43,7 +43,7 @@ export const Contract = ({ near, update, account }) => {
 		};
 		const deposit = parseNearAmount('0.1');
 		await account.functionCall(contractId, 'nft_mint', {
-			token_id: 'token-' + Date.now(),
+			token_id: 'varda-nft-' + Date.now(),
 			metadata,
 			perpetual_royalties
 		}, GAS, deposit);
