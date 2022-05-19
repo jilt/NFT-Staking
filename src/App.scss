@@ -79,7 +79,9 @@ body {
     animation-fill-mode: forwards;
 }
 
-
+.inline {
+    display: inline-block;
+}
 
 @keyframes spinner { 
     from 

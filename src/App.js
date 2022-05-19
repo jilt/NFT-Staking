@@ -33,6 +33,9 @@ const App = () => {
 	return <>
 		{ loading && <div className="loading">
 			<img src={NearLogo} />
+			<p className="inline">
+				Wild Pinups for Ukrain
+			</p>
 		</div>
 		}
 		{

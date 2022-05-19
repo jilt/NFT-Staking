@@ -28,25 +28,26 @@ export const Contract = ({ near, update, account }) => {
 			return;
 		}
 
-		// shape royalties data for minting and check max is < 30%
+		// shape royalties data for minting and check max is < 50%
 		let perpetual_royalties = Object.entries(royalties).map(([receiver, royalty]) => ({
 			[receiver]: royalty * 100
 		})).reduce((acc, cur) => Object.assign(acc, cur), {});
-		if (Object.values(perpetual_royalties).reduce((a, c) => a + c, 0) > 3000) {
-			return alert('Cannot add more than 30% in perpetual NFT royalties when minting');
+		if (Object.values(perpetual_royalties).reduce((a, c) => a + c, 0) > 5000) {
+			return alert('Cannot add more than 50% in perpetual NFT royalties when minting');
 		}
 		
 		update('loading', true);
 		const metadata = { 
 			media,
-			issued_at: Date.now().toString()
+			issued_at: Date.now(),
 		};
-		const deposit = parseNearAmount('0.1');
 		await account.functionCall(contractId, 'nft_mint', {
-			token_id: 'varda-nft-' + Date.now(),
+			token_id: 'wild-pinup-varda' + Date.now(),
 			metadata,
+			receiver_id: account.accountId,
 			perpetual_royalties
-		}, GAS, deposit);
+		}, GAS);
+
 		update('loading', false);
 		setMetadata('');
 	};
