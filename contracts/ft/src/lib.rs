@@ -27,9 +27,6 @@ mod fungible_token_metadata;
 mod internal;
 mod storage_manager;
 
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Contract {
@@ -80,10 +77,10 @@ impl Contract {
         };
         // Determine cost of insertion into LookupMap
         let initial_storage_usage = env::storage_usage();
-        let tmp_account_id = unsafe { String::from_utf8_unchecked(vec![b'a'; 64]) };
-        this.accounts.insert(ValidAccountId, &0u128);
+        let _tmp_account_id = unsafe { String::from_utf8_unchecked(vec![b'a'; 64]) };
+        this.accounts.insert(&owner_id, &0u128);
         this.account_storage_usage = env::storage_usage() - initial_storage_usage;
-        this.accounts.remove(ValidAccountId);
+        this.accounts.remove(&owner_id);
         // Make owner have total supply
         let total_supply_u128: u128 = total_supply.into();
         this.accounts.insert(&owner_id, &total_supply_u128);

@@ -54,12 +54,10 @@ impl Contract {
         );
         self.internal_withdraw(sender_id, amount);
         self.internal_deposit(receiver_id, amount);
-        env::setup_panic_hook();
-        alert(format!("Transfer {} from {} to {}", amount, sender_id, receiver_id).as_bytes());
-        if let Some(memo) = memo {
-            env::setup_panic_hook();
-            
-            alert(format!("Memo: {}", memo).as_bytes());
+        env::log_str("Transfer executed");
+        if let Some(_memo) = memo {
+            env::log_str("Memo: {}");
+
         }
     }
 }

@@ -78,7 +78,7 @@ trait FungibleTokenReceiver {
     /// - `msg` - a string message that was passed with this transfer call.
     ///
     /// Returns the amount of unused tokens that should be returned to sender, in a decimal string representation.
-    fn ft_on_transfer(&mut self, sender_id: AccountId, amount: U128, msg: String) -> Promise;
+    fn ft_on_transfer(&mut self, sender_id: ValidAccountId, amount: U128, msg: String) -> Promise;
 }
 
 #[ext_contract(ext_self)]
@@ -127,7 +127,7 @@ impl FungibleTokenCore for Contract {
             sender_id.clone(),
             amount.into(),
             msg,
-            receiver_id,
+            receiver_id.clone(),
             NO_DEPOSIT,
             env::prepaid_gas() - GAS_FOR_FT_TRANSFER_CALL,
         )
@@ -184,21 +184,12 @@ impl FungibleTokenResolver for Contract {
                 if let Some(sender_balance) = self.accounts.get(&sender_id) {
                     self.accounts
                         .insert(&sender_id, &(sender_balance + refund_amount));
-                    env::setup_panic_hook();
-                    alert(
-                        format!(
-                            "Refund {} from {} to {}",
-                            refund_amount, receiver_id, sender_id
-                        )
-                        .as_bytes(),
-                    );
+                    env::log_str(&format!("Excess $NEAR attached. Refunding {:?} {:?} yoctoNEAR", env::predecessor_account_id().to_string(), refund_amount));
                     return (amount - refund_amount).into();
                 } else {
                     // Sender's account was deleted, so we need to burn tokens.
                     self.total_supply -= refund_amount;
-                    env::log_str("The account of the sender was deleted");
-                    env::setup_panic_hook();
-                    alert(format!("Burn {}", refund_amount).as_bytes());
+                    env::log_str(&format!("The account of {:?} was deleted, {:?} yoctoNEAR refund sent", env::predecessor_account_id().to_string(), refund_amount));
                 }
             }
         }
