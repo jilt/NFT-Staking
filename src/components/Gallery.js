@@ -129,6 +129,7 @@ export const Gallery = ({ app, update, contractAccount, account, loading, dispat
 					path: 'metadata.issued_at',
 				}
 			}]);
+			console.log(salesURl);
 			sales = (await fetch(salesUrl, { headers }).then((res) => res.json()))[0];
 		} else {
 			sales = await contractAccount.viewFunction(marketId, 'get_sales_by_nft_contract_id', {

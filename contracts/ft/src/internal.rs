@@ -25,7 +25,7 @@ impl Contract {
         if let Some(new_balance) = balance.checked_add(amount) {
             self.accounts.insert(&account_id, &new_balance);
         } else {
-            env::panic(b"Balance overflow");
+            env::panic_str("Balance overflow");
         }
     }
 
@@ -37,7 +37,7 @@ impl Contract {
         if let Some(new_balance) = balance.checked_sub(amount) {
             self.accounts.insert(&account_id, &new_balance);
         } else {
-            env::panic(b"The account doesn't have enough balance");
+            env::panic_str("The account doesn't have enough balance");
         }
     }
 
@@ -54,9 +54,12 @@ impl Contract {
         );
         self.internal_withdraw(sender_id, amount);
         self.internal_deposit(receiver_id, amount);
-        env::log(format!("Transfer {} from {} to {}", amount, sender_id, receiver_id).as_bytes());
+        env::setup_panic_hook();
+        alert(format!("Transfer {} from {} to {}", amount, sender_id, receiver_id).as_bytes());
         if let Some(memo) = memo {
-            env::log(format!("Memo: {}", memo).as_bytes());
+            env::setup_panic_hook();
+            
+            alert(format!("Memo: {}", memo).as_bytes());
         }
     }
 }

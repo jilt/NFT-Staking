@@ -28,7 +28,7 @@ mod internal;
 mod storage_manager;
 
 #[global_allocator]
-static ALLOC: near_sdk::wee_alloc::WeeAlloc<'_> = near_sdk::wee_alloc::WeeAlloc::INIT;
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -49,14 +49,14 @@ pub struct Contract {
 
 impl Default for Contract {
     fn default() -> Self {
-        env::panic(b"Contract is not initialized");
+        env::panic_str("Contract is not initialized");
     }
 }
 
 #[near_bindgen]
 impl Contract {
     #[init]
-    pub fn new(owner_id: ValidAccountId, total_supply: U128, version: String, name: String, symbol: String, reference: String, reference_hash: String, decimals: u8) -> Self {
+    pub fn new(owner_id: AccountId, total_supply: U128, version: String, name: String, symbol: String, reference: String, reference_hash: String, decimals: u8) -> Self {
         assert!(!env::state_exists(), "Already initialized");
         let ref_hash_result: Result<Vec<u8>, ParseIntError> = (0..reference_hash.len())
             .step_by(2)
@@ -81,12 +81,12 @@ impl Contract {
         // Determine cost of insertion into LookupMap
         let initial_storage_usage = env::storage_usage();
         let tmp_account_id = unsafe { String::from_utf8_unchecked(vec![b'a'; 64]) };
-        this.accounts.insert(&tmp_account_id, &0u128);
+        this.accounts.insert(ValidAccountId, &0u128);
         this.account_storage_usage = env::storage_usage() - initial_storage_usage;
-        this.accounts.remove(&tmp_account_id);
+        this.accounts.remove(ValidAccountId);
         // Make owner have total supply
         let total_supply_u128: u128 = total_supply.into();
-        this.accounts.insert(&owner_id.as_ref(), &total_supply_u128);
+        this.accounts.insert(&owner_id, &total_supply_u128);
         this
     }
 
@@ -109,22 +109,22 @@ mod fungible_token_tests {
     use near_sdk::{testing_env, VMContext};
 
     use super::*;
-    use near_sdk::json_types::ValidAccountId;
+    use near_sdk::json_types::AccountId;
     use std::convert::TryFrom;
 
     const ZERO_U128: Balance = 0u128;
 
-    fn alice() -> ValidAccountId {
-        ValidAccountId::try_from("alice.near").unwrap()
+    fn alice() -> AccountId {
+        AccountId::try_from("alice.near").unwrap()
     }
-    fn bob() -> ValidAccountId {
-        ValidAccountId::try_from("bob.near").unwrap()
+    fn bob() -> AccountId {
+        AccountId::try_from("bob.near").unwrap()
     }
-    fn carol() -> ValidAccountId {
-        ValidAccountId::try_from("carol.near").unwrap()
+    fn carol() -> AccountId {
+        AccountId::try_from("carol.near").unwrap()
     }
-    fn dex() -> ValidAccountId {
-        ValidAccountId::try_from("dex.near").unwrap()
+    fn dex() -> AccountId {
+        AccountId::try_from("dex.near").unwrap()
     }
 
     fn get_context(predecessor_account_id: AccountId) -> VMContext {

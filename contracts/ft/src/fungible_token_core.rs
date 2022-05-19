@@ -2,8 +2,8 @@ use crate::*;
 use near_sdk::json_types::ValidAccountId;
 use near_sdk::{ext_contract, Gas, PromiseResult};
 
-const GAS_FOR_RESOLVE_TRANSFER: Gas = 5_000_000_000_000;
-const GAS_FOR_FT_TRANSFER_CALL: Gas = 25_000_000_000_000 + GAS_FOR_RESOLVE_TRANSFER;
+const GAS_FOR_RESOLVE_TRANSFER: Gas = Gas(5_000_000_000_000);
+const GAS_FOR_FT_TRANSFER_CALL: Gas = Gas(25_000_000_000_000 + GAS_FOR_RESOLVE_TRANSFER.0);
 
 const NO_DEPOSIT: Balance = 0;
 
@@ -18,7 +18,7 @@ pub trait FungibleTokenCore {
     /// - `receiver_id` - the account ID of the receiver.
     /// - `amount` - the amount of tokens to transfer. Must be a positive number in decimal string representation.
     /// - `memo` - an optional string field in a free form to associate a memo with this transfer.
-    fn ft_transfer(&mut self, receiver_id: ValidAccountId, amount: U128, memo: Option<String>);
+    fn ft_transfer(&mut self, receiver_id: AccountId, amount: U128, memo: Option<String>);
 
     /// Transfers positive `amount` of tokens from the `env::predecessor_account_id` to `receiver_id` account. Then
     /// calls `ft_on_transfer` method on `receiver_id` contract and attaches a callback to resolve this transfer.
@@ -45,7 +45,7 @@ pub trait FungibleTokenCore {
     /// Returns a promise which will result in the amount of tokens withdrawn from sender's account.
     fn ft_transfer_call(
         &mut self,
-        receiver_id: ValidAccountId,
+        receiver_id: AccountId,
         amount: U128,
         msg: String,
         memo: Option<String>,
@@ -55,7 +55,7 @@ pub trait FungibleTokenCore {
     fn ft_total_supply(&self) -> U128;
 
     /// Returns the balance of the account. If the account doesn't exist must returns `"0"`.
-    fn ft_balance_of(&self, account_id: ValidAccountId) -> U128;
+    fn ft_balance_of(&self, account_id: AccountId) -> U128;
 }
 
 #[ext_contract(ext_fungible_token_receiver)]
@@ -103,17 +103,17 @@ trait FungibleTokenResolver {
 #[near_bindgen]
 impl FungibleTokenCore for Contract {
     #[payable]
-    fn ft_transfer(&mut self, receiver_id: ValidAccountId, amount: U128, memo: Option<String>) {
+    fn ft_transfer(&mut self, receiver_id: AccountId, amount: U128, memo: Option<String>) {
         let sender_id = env::predecessor_account_id();
         assert_one_yocto();
         let amount = amount.into();
-        self.internal_transfer(&sender_id, receiver_id.as_ref(), amount, memo);
+        self.internal_transfer(&sender_id, &receiver_id, amount, memo);
     }
 
     #[payable]
     fn ft_transfer_call(
         &mut self,
-        receiver_id: ValidAccountId,
+        receiver_id: AccountId,
         amount: U128,
         msg: String,
         memo: Option<String>,
@@ -121,13 +121,13 @@ impl FungibleTokenCore for Contract {
         assert_one_yocto();
         let sender_id = env::predecessor_account_id();
         let amount = amount.into();
-        self.internal_transfer(&sender_id, receiver_id.as_ref(), amount, memo);
+        self.internal_transfer(&sender_id, &receiver_id, amount, memo);
         // Initiating receiver's call and the callback
         ext_fungible_token_receiver::ft_on_transfer(
             sender_id.clone(),
             amount.into(),
             msg,
-            receiver_id.as_ref(),
+            receiver_id,
             NO_DEPOSIT,
             env::prepaid_gas() - GAS_FOR_FT_TRANSFER_CALL,
         )
@@ -135,7 +135,7 @@ impl FungibleTokenCore for Contract {
             sender_id,
             receiver_id.into(),
             amount.into(),
-            &env::current_account_id(),
+            env::current_account_id(),
             NO_DEPOSIT,
             GAS_FOR_RESOLVE_TRANSFER,
         ))
@@ -145,8 +145,8 @@ impl FungibleTokenCore for Contract {
         self.total_supply.into()
     }
 
-    fn ft_balance_of(&self, account_id: ValidAccountId) -> U128 {
-        self.accounts.get(account_id.as_ref()).unwrap_or(0).into()
+    fn ft_balance_of(&self, account_id: AccountId) -> U128 {
+        self.accounts.get(&account_id).unwrap_or(0).into()
     }
 }
 
@@ -184,7 +184,8 @@ impl FungibleTokenResolver for Contract {
                 if let Some(sender_balance) = self.accounts.get(&sender_id) {
                     self.accounts
                         .insert(&sender_id, &(sender_balance + refund_amount));
-                    env::log(
+                    env::setup_panic_hook();
+                    alert(
                         format!(
                             "Refund {} from {} to {}",
                             refund_amount, receiver_id, sender_id
@@ -195,8 +196,9 @@ impl FungibleTokenResolver for Contract {
                 } else {
                     // Sender's account was deleted, so we need to burn tokens.
                     self.total_supply -= refund_amount;
-                    env::log(b"The account of the sender was deleted");
-                    env::log(format!("Burn {}", refund_amount).as_bytes());
+                    env::log_str("The account of the sender was deleted");
+                    env::setup_panic_hook();
+                    alert(format!("Burn {}", refund_amount).as_bytes());
                 }
             }
         }

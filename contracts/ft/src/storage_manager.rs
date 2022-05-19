@@ -14,19 +14,19 @@ pub struct AccountStorageBalance {
 }
 
 pub trait StorageManager {
-    fn storage_deposit(&mut self, account_id: Option<ValidAccountId>) -> AccountStorageBalance;
+    fn storage_deposit(&mut self, account_id: Option<AccountId>) -> AccountStorageBalance;
 
     fn storage_withdraw(&mut self, amount: U128) -> AccountStorageBalance;
 
     fn storage_minimum_balance(&self) -> U128;
 
-    fn storage_balance_of(&self, account_id: ValidAccountId) -> AccountStorageBalance;
+    fn storage_balance_of(&self, account_id: AccountId) -> AccountStorageBalance;
 }
 
 #[near_bindgen]
 impl StorageManager for Contract {
     #[payable]
-    fn storage_deposit(&mut self, account_id: Option<ValidAccountId>) -> AccountStorageBalance {
+    fn storage_deposit(&mut self, account_id: Option<AccountId>) -> AccountStorageBalance {
         let amount = env::attached_deposit();
         assert_eq!(
             amount,
@@ -37,7 +37,7 @@ impl StorageManager for Contract {
             .map(|a| a.into())
             .unwrap_or_else(|| env::predecessor_account_id());
         if self.accounts.insert(&account_id, &0).is_some() {
-            env::panic(b"The account is already registered");
+            env::panic_str("The account is already registered");
         }
         AccountStorageBalance {
             total: amount.into(),
@@ -57,7 +57,7 @@ impl StorageManager for Contract {
         let account_id = env::predecessor_account_id();
         if let Some(balance) = self.accounts.remove(&account_id) {
             if balance > 0 {
-                env::panic(b"The account has positive token balance");
+                env::panic_str("The account has positive token balance");
             } else {
                 Promise::new(account_id).transfer(amount + 1);
                 AccountStorageBalance {
@@ -66,7 +66,7 @@ impl StorageManager for Contract {
                 }
             }
         } else {
-            env::panic(b"The account is not registered");
+            env::panic_str("The account is not registered");
         }
     }
 
@@ -74,8 +74,8 @@ impl StorageManager for Contract {
         (Balance::from(self.account_storage_usage) * STORAGE_PRICE_PER_BYTE).into()
     }
 
-    fn storage_balance_of(&self, account_id: ValidAccountId) -> AccountStorageBalance {
-        if let Some(balance) = self.accounts.get(account_id.as_ref()) {
+    fn storage_balance_of(&self, account_id: AccountId) -> AccountStorageBalance {
+        if let Some(balance) = self.accounts.get(&account_id) {
             AccountStorageBalance {
                 total: self.storage_minimum_balance(),
                 available: if balance > 0 {
