@@ -1,54 +1,76 @@
 {
-    "name": "react-parcel-boilerplate",
-    "version": "1.0.0",
-    "description": "React Parcel Boilerplate",
-    "author": "Matt Lockyer and Jilt",
-    "license": "ISC",
-    "dependencies": {
-        "@babel/core": "^7.17.12",
-        "@babel/preset-env": "^7.17.12",
-        "@parcel/core": "^2.5.0",
-        "@react-native-community/art": "^1.2.0",
-        "bn": "^1.0.5",
-        "copy-to-clipboard": "^3.3.1",
-        "near-api-js": "^0.44.2",
-        "near-cli": "^3.2.0",
-        "near-seed-phrase": "^0.2.0",
-        "react": "^18.1.0",
-        "react-dom": "^18.1.0",
-        "react-native": "^0.68.2",
-        "react-native-neomorph-shadows": "^1.1.2"
+  "name": "varda-nft-market",
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "npm run build:contract && npm run build:web",
+    "build:contract": "cd nft-contract && bash build.sh && cd .. && ls && cd market-contract && bash build.sh && cd ..",
+    "build:contract:debug": "cd nft-contract && bash build.sh && cd .. && ls && cd market-contract && bash build.sh && cd ..",
+    "build:web": "parcel build src/index.html --public-url ./",
+    "dev:deploy:contract": "near dev-deploy",
+    "deploy:contract": "near deploy",
+    "deploy:pages": "gh-pages -d dist/",
+    "deploy": "npm run build && npm run deploy:contract",
+    "prestart": "npm run build:contract:debug && npm run dev:deploy:contract",
+    "start": "echo The app is starting! It will automatically open in your browser when ready && env-cmd -f ./neardev/dev-account.env parcel src/index.html --open",
+    "dev": "nodemon --watch nft-contract/src -e rs --exec \"npm run start\"",
+    "test": "npm run build:contract:debug && cd nft-contract && cargo test -- --nocapture && cd .. && jest test --runInBand",
+    "makecontract": "cd nft-contract && ./build.sh && cd .. && ls && cd market-contract && ./build.sh && cd .."
+  },
+  "devDependencies": {
+    "@babel/core": "~7.14.0",
+    "@babel/preset-env": "~7.14.0",
+    "@babel/preset-react": "~7.13.13",
+    "babel-jest": "~26.6.2",
+    "env-cmd": "~10.1.0",
+    "gh-pages": "~3.1.0",
+    "jest": "~26.6.2",
+    "jest-environment-node": "~26.6.2",
+    "near-cli": "~2.1.1",
+    "nodemon": "~2.0.3",
+    "parcel-bundler": "~1.12.4",
+    "react-test-renderer": "~17.0.1",
+    "shelljs": "~0.8.4"
+  },
+  "dependencies": {
+    "bn.js": "^5.2.0",
+    "bootstrap": "^5.1.3",
+    "near-api-js": "~0.43.1",
+    "neum-ui": "^1.1.4",
+    "react": "~17.0.1",
+    "react-bootstrap": "^2.1.0",
+    "react-dom": "~17.0.1",
+    "regenerator-runtime": "~0.13.5",
+    "use-file-picker": "^1.4.2",
+    "web3.storage": "^4.2.0"
+  },
+  "resolutions": {
+    "@babel/preset-env": "7.13.8"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(jpg|ico|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/src/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/src/__mocks__/fileMock.js"
     },
-    "devDependencies": {
-        "@parcel/transformer-image": "2.5.0",
-        "@parcel/transformer-sass": "2.5.0",
-        "cross-env": "^7.0.3",
-        "eslint": "^8.15.0",
-        "gh-pages": "^4.0.0",
-        "jest": "^28.1.0",
-        "jest-environment-uint8array": "^1.0.0",
-        "node-fetch": "^3.2.4",
-        "parcel": "^2.5.0",
-        "process": "^0.11.10",
-        "rimraf": "^3.0.2",
-        "sass": "^1.51.0"
-    },
-    "browserslist": [
-        "last 2 Chrome versions"
+    "setupFiles": [
+      "<rootDir>/src/jest.init.js"
     ],
-    "scripts": {
-        "test:deploy": "yarn dev:deploy && yarn test",
-        "dev:deploy": "yarn build:contracts && (near dev-deploy || exit 0) && yarn patch:config",
-        "build:contracts": "cd contracts/nft-simple && ./build.sh && cd ../.. && cd contracts/market-simple && ./build.sh && cd ../.. && cd contracts/ft && ./build.sh && cd ../..",
-        "patch:config": "node ./utils/patch-config.js",
-        "test": "cross-env REACT_APP_ENV=dev jest app.test.js --useStderr",
-        "start": "cross-env REACT_APP_ENV=dev parcel src/index.html --open",
-        "start:deploy": "yarn patch:deploy-config && cross-env REACT_APP_ENV=dev REACT_APP_API_HELPER=true parcel src/index.html --open",
-        "fix": "eslint src/ test/ --fix",
-        "test:unit": "(cd contracts && cargo test -- --nocapture --color always)",
-        "prebuild": "rm -rf ./dist",
-        "patch:deploy-config": "node ./utils/patch-deploy-config.js",
-        "build": "parcel build src/index.html --no-source-maps --public-url https://near-apps.github.io/nft-market/",
-        "deploy": "yarn patch:deploy-config && cross-env REACT_APP_ENV=dev REACT_APP_API_HELPER=true yarn build && gh-pages -d dist"
-    }
+    "testEnvironment": "near-cli/test_environment",
+    "testPathIgnorePatterns": [
+      "<rootDir>/contract/",
+      "<rootDir>/node_modules/"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

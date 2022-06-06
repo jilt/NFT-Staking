@@ -1,54 +1,64 @@
-const contractName = 'dev-1652969409169-67956855531151';
+const CONTRACT_NAME = "market.helpme.testnet";
 
-module.exports = function getConfig() {
-	let config = {
-		networkId: "testnet",
-		nodeUrl: "https://rpc.testnet.near.org",
-		// walletUrl: 'http://localhost:1234',
-		walletUrl: "https://wallet.testnet.near.org",
-		helperUrl: "https://helper.testnet.near.org",
-		contractName,
-	};
+function getConfig(env) {
+  switch (env) {
+    case "production":
+    case "mainnet":
+      return {
+        networkId: "mainnet",
+        nodeUrl: "https://rpc.mainnet.near.org",
+        contractName: CONTRACT_NAME,
+        walletUrl: "https://wallet.near.org",
+        helperUrl: "https://helper.mainnet.near.org",
+        explorerUrl: "https://explorer.mainnet.near.org",
+      };
+    case "development":
+    case "testnet":
+      return {
+        networkId: "testnet",
+        nodeUrl: "https://rpc.testnet.near.org",
+        contractName: CONTRACT_NAME,
+        walletUrl: "https://wallet.testnet.near.org",
+        helperUrl: "https://helper.testnet.near.org",
+        explorerUrl: "https://explorer.testnet.near.org",
+      };
+    case "betanet":
+      return {
+        networkId: "betanet",
+        nodeUrl: "https://rpc.betanet.near.org",
+        contractName: CONTRACT_NAME,
+        walletUrl: "https://wallet.betanet.near.org",
+        helperUrl: "https://helper.betanet.near.org",
+        explorerUrl: "https://explorer.betanet.near.org",
+      };
+    case "local":
+      return {
+        networkId: "local",
+        nodeUrl: "http://localhost:3030",
+        keyPath: `${process.env.HOME}/.near/validator_key.json`,
+        walletUrl: "http://localhost:4000/wallet",
+        contractName: CONTRACT_NAME,
+      };
+    case "test":
+    case "ci":
+      return {
+        networkId: "shared-test",
+        nodeUrl: "https://rpc.ci-testnet.near.org",
+        contractName: CONTRACT_NAME,
+        masterAccount: "test.near",
+      };
+    case "ci-betanet":
+      return {
+        networkId: "shared-test-staging",
+        nodeUrl: "https://rpc.ci-betanet.near.org",
+        contractName: CONTRACT_NAME,
+        masterAccount: "test.near",
+      };
+    default:
+      throw Error(
+        `Unconfigured environment '${env}'. Can be configured in src/config.js.`
+      );
+  }
+}
 
-	if (process.env.REACT_APP_ENV !== undefined) {
-		config = {
-			explorerUrl: "https://explorer.testnet.near.org",
-			...config,
-			GAS: "200000000000000",
-			DEFAULT_NEW_ACCOUNT_AMOUNT: "5",
-			DEFAULT_NEW_CONTRACT_AMOUNT: "5",
-			GUESTS_ACCOUNT_SECRET:
-        "7UVfzoKZL4WZGF98C3Ue7tmmA6QamHCiB1Wd5pkxVPAc7j6jf3HXz5Y9cR93Y68BfGDtMLQ9Q29Njw5ZtzGhPxv",
-			contractMethods: {
-				changeMethods: [
-					"new",
-					"nft_mint",
-					"nft_transfer",
-					"add_guest",
-					"remove_guest",
-					"nft_approve_account_id",
-					"nft_mint_guest",
-					"nft_add_sale_guest",
-					"nft_remove_sale_guest",
-					"upgrade_guest",
-				],
-				viewMethods: ["get_guest", "get_token_ids", "nft_token", "get_sale"],
-			},
-			marketDeposit: "100000000000000000000000",
-			marketId: "market." + contractName,
-		};
-	}
-
-	if (process.env.REACT_APP_ENV === "prod") {
-		config = {
-			...config,
-			networkId: "mainnet",
-			nodeUrl: "https://rpc.mainnet.near.org",
-			walletUrl: "https://wallet.near.org",
-			helperUrl: "https://helper.mainnet.near.org",
-			contractName: "near",
-		};
-	}
-
-	return config;
-};
+module.exports = getConfig;
