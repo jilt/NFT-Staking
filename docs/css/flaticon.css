@@ -1,0 +1,71 @@
+@font-face {
+	font-family: "Flaticon";
+	src: url("../fonts/flaticons/flaticon.eot");
+	src: url("../fonts/flaticons/flaticon.eot#iefix") format("embedded-opentype"),
+	url("../fonts/flaticons/flaticon.woff") format("woff"),
+	url("../fonts/flaticons/flaticon.ttf") format("truetype"),
+	url("../fonts/flaticons/flaticon.svg") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+[class^="flaticon-"]:before, [class*=" flaticon-"]:before,
+[class^="flaticon-"]:after, [class*=" flaticon-"]:after {   
+	font-family: Flaticon;
+	font-style: normal;
+	line-height: 1;
+	display: inline-block;
+}
+.flaticon-baked3:before {
+	content: "\e000";
+}
+.flaticon-baked4:before {
+	content: "\e001";
+}
+.flaticon-baker:before {
+	content: "\e002";
+}
+.flaticon-bakery12:before {
+	content: "\e003";
+}
+.flaticon-bakery19:before {
+	content: "\e004";
+}
+.flaticon-bakery20:before {
+	content: "\e005";
+}
+.flaticon-big101:before {
+	content: "\e006";
+}
+.flaticon-breakfast7:before {
+	content: "\e007";
+}
+.flaticon-candles5:before {
+	content: "\e008";
+}
+.flaticon-construction10:before {
+	content: "\e009";
+}
+.flaticon-construction11:before {
+	content: "\e00a";
+}
+.flaticon-constructor2:before {
+	content: "\e00b";
+}
+.flaticon-house109:before {
+	content: "\e00c";
+}
+.flaticon-law1:before {
+	content: "\e00d";
+}
+.flaticon-power30:before {
+	content: "\e00e";
+}
+.flaticon-school37:before {
+	content: "\e00f";
+}
+.flaticon-triangular45:before {
+	content: "\e010";
+}
+.flaticon-truck29:before {
+	content: "\e011";
+}

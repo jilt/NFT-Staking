@@ -1,0 +1,426 @@
+/*===============================
+	Color
+=================================*/
+
+a:focus, a:hover,
+.hover-left:hover,
+.hover-left:focus,
+.hover-right:hover,
+.hover-right:focus,
+.section-head.style_3 h2,
+.navbar-nav > li.current > a,
+.navbar-nav > li.current > a:hover,
+.navbar-nav > li.current > a:focus,
+.header19 .navbar-nav > li > a:hover,
+.header19.animated .navbar-nav > li.current > a,
+.header19.animated .navbar-nav > li > a:hover,
+.sidebar-nav li a:hover,
+.header21 .search-sub,
+.header21 .side-nav,
+.nav25 .navbar-nav > li.current > a,
+.nav25 .navbar-nav > li > a:hover,
+.nav25 .navbar-nav > li > a:focus,
+.header28.animated .navbar-nav > li.current > a,
+.header28.animated .navbar-nav > li > a:hover,
+.header28 .navbar-nav > li.current > a,
+.header28 .navbar-nav > li > a:hover,
+.header-top.primary .quick-contact:hover > i,
+.header-top.primary .social-links li a:hover,
+.navbar-nav > li .dropdown > li a:hover,
+.home-banner.banner-3 .banner-caption h1,
+.slide6 .slidecaption h1,
+.slide6 .slidecaption h2,
+.home-banner.banner-4 .banner-caption h3,
+.home-banner.banner-4 .banner-caption ul li i,
+.coming-soon.update .mail-submit,
+.banner-7 .sform7 .mail-submit,
+.banner-3 .sform7 .mail-submit,
+.banner-8 .left-content h3,
+.banner-8 .content-item .icon,
+.service-item .service-icon,
+.service-four .service-item .service-icon,
+.service-four .service-desc span,
+.service-3 .service-icon,
+.product-overview h3,
+.gallery-filter li a.active,
+.price-table .value span,
+.parallax-subs .psubs-submit,
+.testimonial-item .date b,
+.tweet-item a,
+.testimonial-item .test-entry span strong,
+#teatimonial .panel-title a,
+.tweet-slider .tweet-item span,
+.nws-item .news-head > span,
+.footer-navigation .footer-nav ul li a:hover,
+.footer .social-links li a:hover,
+.posts-section .post-entry .post-meta a:hover,
+.post-entry .post-media .link-post:hover,
+.about_psot_author h2,
+.about_psot_author div h3 a:hover,
+.post_comment_area > h2,
+.coment_text > div h2 a:hover,
+.coment_text > div span + a:hover,
+.search-head h1 span,
+.similar-project .project-hover a:hover,
+.service-round .servc-icon,
+.service-round:hover h4,
+.progress-set-two .progress-value,
+.service-section .serv-icon,
+.service-gradient .single-service:hover .serv-icon,
+.service-gradient .single-service:hover .serv-icon i,
+.custom-service .csi,
+.counter-item > i,
+.member-profile h3,
+.contact.parallax .section-head h2,
+.coming-soon .coming-text h1 span,
+.coming-soon .go-down a,
+.controls-wrapper .controls:hover,
+.boxed-mode .footer-top a,
+.shortcode-widget li a:hover,
+.sc_toggle2 .panel-title a,
+.sc_accordion2 .panel-title a,
+.spn_alert_yellow,
+.bordered .navbar-default.animated .navbar-nav > li.current > a,
+.spn_sc_list_area ul.list_style_02 li span,
+.sc_ttp > p > a,
+.spn_sc_iconbox_area .single_icon_box .iconbox_icon,
+.spn_sc_iconbox_area .single_icon_box .iconbox_text a,
+.dropcap:first-letter,
+.sc_animated_banner.sc_animation_3 div h2,
+.sc_counter .pixelcoder_counter,
+.sc_blog_post .tags a:hover,
+.sc_blog_post h2 a:hover,
+.sc_blog_post a.link_more:hover,
+.blog_2 .tags a,
+.sc_blog_post.sc_recent_post a.link_more:hover,
+.sc_content_slider .flexslider .slides li .slider_text a,
+.sc_social div a,
+.sc_testimonial .sc_single_testimonial span,
+.sc_code .panel-body .btn-group button {
+	color: #EAB129;
+}
+
+
+/*===============================
+	Background Color
+=================================*/
+
+*::-moz-selection {
+    background-color: #EAB129;
+    color: #fff;
+}
+*::-selection {
+    background-color: #EAB129;
+    color: #fff;
+}
+.spinner > div,
+.btn-blue,
+.quick-contact:hover > i,
+.header-top .social-links li a:hover,
+.header-top.primary,
+.header-top.primary + .slide-top .hide-top,
+.navbar-nav > li > a:after,
+.section-head.style_2 h2:before,
+.navbar-nav > li.current > a:before,
+.navbar-nav > li > a:hover:before,
+.navbar-nav > li > a:focus:before,
+.social-links li a:hover,
+.header19 .search-sub,
+.header19 .cart-and-search > a:hover,
+.nav20 .navbar-nav > li.current > a,
+.nav20 .navbar-nav > li > a:hover,
+.nav20 .navbar-nav > li > a:focus,
+.nav21 .navbar-nav > li.current > a,
+.nav21 .navbar-nav > li > a:hover,
+.nav21 .navbar-nav > li > a:focus,
+.nav22 .navbar-nav > li.current > a,
+.nav22 .navbar-nav > li > a:hover,
+.nav22 .navbar-nav > li > a:focus,
+.nav23 .navbar-nav > li.current > a,
+.nav23 .navbar-nav > li > a:hover,
+.nav23 .navbar-nav > li > a:focus,
+.top-search .search-submit,
+.home-banner.banner-2 .slide-controls a:hover,
+.home-banner.banner-2 .carousel-indicators li:hover,
+.home-banner.banner-2 .carousel-indicators li.active,
+.slide-nav a:hover,
+.banner-5 .calltoac,
+.slide6 .slidecaption h3,
+.banner-3 .home-social li a:hover,
+.banner-8 .quote-form .quote-sub,
+.sform .subs-sub,
+.service-four .service-item:hover .service-icon,
+.service-four .service-desc a,
+.service-four .service-item:hover .service-desc a:before,
+.service-3 .service-item:hover,
+.banner-10 .carna_service_14 .single_carna_service:hover i:before,
+.price-switcher a.active,
+.price-table:hover .package-title,
+.price-table .value:after,
+.team .member-thumb .mask li a:hover,
+.team-mate:hover .about,
+.vtabs-nav li a:hover,
+.vtabs-nav li.active a,
+#faq .panel-title a .icon,
+#faq .panel-heading.active a .icon:before,
+.twitter-feed .twitter-icon:after,
+.twitter-feed .twitter-icon > i,
+.nws-item .post-meta:after,
+.timeline-blog .post-entry:hover:after,
+.contact4 .address,
+.footer,
+.post-entry .excerpt-btn:hover:before,
+.post-entry .excerpt-btn:hover:after,
+.post-entry .excerpt-btn a:hover,
+.post-entry .excerpt-btn:hover a:after,
+.posts-section .post-entry .post-share li a:hover,
+.sidebar .bx-controls-direction a,
+.post-entry .bx-controls-direction a,
+.next-prev-post a:hover,
+.next-prev-post a:focus,
+.comment_form_box .comment-submit:hover,
+.sidebar .blog-search .search-sub,
+.sidebar .social-links li a:hover,
+.sidebar .tagcloud a:hover,
+.search-page-sub,
+.single-postfolio-cat h1:after,
+.blue-bg,
+.feature-item .fi-icon,
+.progress-set-one .progress-bar,
+.progress-set-7 .progress-wrapper,
+.chart-inner-circle .circle-text,
+.pie-chart.bg-color,
+.service-section .single-service:hover .serv-icon,
+.service-section .servimg span,
+.service-gradient .col-xs-12:nth-child(even) .single-service,
+.custom-service .csi:after,
+.custom-service:hover .csi,
+.counter-style-2 > span,
+.coming-soon .social-links ul li a:hover,
+.coming-soon .go-down .vrbox:after,
+body.boxed-mode .footer,
+.boxed-slider-section .bx-controls-direction a:hover,
+#go-top:hover,
+.demo_head,
+.sc_toggle2 .panel-title a .icon,
+.sc_accordion2 .panel-title a .icon,
+.sc_toggle2 .panel-heading.active a .icon:before,
+.sc_accordion2 .panel-heading.active a .icon:before,
+.sc_accordion .panel-heading .panel-title a:before,
+.sc_toggle .panel-heading .panel-title a:before,
+.sc_accordion .panel-heading .panel-title a:after,
+.sc_toggle .panel-heading .panel-title a:after,
+.sc_modal_section .modal-header .close:hover,
+#sc_modal_5 .modal-header .modal-title:before,
+.hr4 span,
+.hr5 span,
+.hr7 span,
+.spn_sc_list_area ul.list_style_01 li span,
+.spn_sc_list_area .list_style_06 li:after,
+.spn_sc_iconbox_area .single_icon_box .icon_image_circle,
+.sc_cta > a,
+.dropcap.dropcap_style1:first-letter,
+.sc_animated_banner.sc_animation_2,
+.sc_contact_info .social p a:hover,
+.sc_contact_info.contact_2 .title:before,
+.sc_contact_info.contact_2 .social h3:before,
+.sc_contact_info.contact_3 .title:before,
+.sc_contact_info.contact_3 .social h3:before,
+.sc_contact_info.contact_5 .title:before,
+.sc_contact_info.contact_5 .social h3:before,
+.sc_contact_info.contact_6 .title:before,
+.sc_contact_info.contact_6 .social h3:before,
+.sc_blog_post .date span:after,
+.sc_content_slider .flexslider .slides li .slider_text a:hover,
+.sc_box_title.style2:after,
+.sc_box_title.style2:before,
+.sc_social.style2 a:hover,
+.sc_social.style7 div a:before,
+.sc_testimonial .flex-direction-nav .flex-prev:before,
+.sc_number_section .number p,
+.sc_code .panel-heading,
+.sc_code .panel-body .btn-group button:hover,
+.progress-bar,
+.service-gradient .single-service,
+#product .bx-wrapper .bx-pager.bx-default-pager a:hover,
+.header-top .social-links li a:hover,
+.member-profile .social-links li a:hover {
+    background-color: #EAB129;
+}
+
+.service-section.service-gradient .single-service:hover .serv-icon {
+    background-color: #fff;
+}
+
+.service-gradient .col-xs-12:nth-child(2n+1) .single-service {
+    background-color: #d69d15;
+}
+
+.service-gradient .single-service:hover .serv-cion {
+    background-color: #fff;
+}
+.product-desc a:before {
+    background-color: #DBA21A;
+}
+
+.team .bx-controls-direction a.bx-prev:after {
+    background-color: #EAB129!important;
+}
+.service-gradient {
+    background: linear-gradient(90deg, #d69d15 50%, #EAB129 50%) no-repeat scroll center center transparent;
+}
+
+.caption-top,
+.gallery-filterable .portfolio-thumb .mask,
+.service-item .service-thumb .mask,
+.sform .subs-sub:hover,
+.btn-blue:hover,
+.btn-blue:focus,
+.sc_cta > a:hover,
+.sc_cta > a:focus {
+	background-color: rgba(234,177,41,0.8);
+}
+
+.banner-10 .carna_service_14 .single_carna_service i:after {
+    background-color: rgba(255, 82, 94, 0.3);
+}
+
+.page-head .overlay {
+    background: linear-gradient(90deg, rgba(0,0,0,0.5), rgba(234,177,41,0.6) 40%)
+}
+
+.client-carousel .overlay {
+    background: linear-gradient(0deg, rgba(234,177,41,0.6) 40%,  rgba(0,0,0,0.5))
+}
+
+.spn_sc_list_area .list_style_03 li:after {
+    background: none repeat scroll 0 0 rgba(234,177,41, 0.2);
+}
+.spn_sc_list_area .list_style_05 li:nth-child(even) {
+    background: none repeat scroll 0 0 rgba(234,177,41, 0.1);
+}
+
+/*===============================
+	Border Color
+=================================*/
+
+.loader-spinner,
+.header-top .social-links li a:hover,
+.quick-contact:hover > i,
+.header-top.primary + .slide-top,
+.home-banner.banner-2 .carousel-indicators li:hover,
+.home-banner.banner-2 .carousel-indicators li.active,
+.banner-3 .home-social li a:hover,
+.service-four .service-desc a,
+.service-3 .service-icon,
+.social-links li a:hover,
+.header26 .social-links li > a:hover,
+.header28.animated .navbar-nav > li.current > a,
+.header28.animated .navbar-nav > li > a:hover,
+.header28 .navbar-nav > li.current > a,
+.header28 .navbar-nav > li > a:hover,
+.team .member-thumb .mask li a:hover,
+.vtabs-nav li a:hover,
+.vtabs-nav li.active a,
+.quote-form .input:focus,
+#teatimonial .panel-default .panel-heading:hover,
+.bx-wrapper .bx-controls-direction a.bx-prev:hover:before,
+.bx-wrapper .bx-controls-direction a.bx-next:hover:after,
+.footer-navigation,
+blockquote,
+.post-entry .excerpt-btn a:hover,
+.posts-section .post-entry .post-share li a:hover,
+.comment_form_box .comment-submit:hover,
+.comment_form_box .form-control:focus,
+.sidebar .social-links li a:hover,
+.sidebar .tagcloud a:hover,
+.footer-top,
+.progress-set-two .progress-value,
+.service-section .single-service:hover .serv-icon,
+.custom-service .csi,
+.custom-service:hover .csi,
+.client-carousel2 .bx-controls-direction a.bx-prev:hover:before,
+.client-carousel2 .bx-controls-direction a.bx-next:hover:after,
+.coming-soon .social-links ul li a:hover,
+.coming-soon .go-down .vrbox,
+.form-control:focus,
+.sc_toggle2 .panel-default .panel-heading:hover,
+.sc_accordion2 .panel-default .panel-heading:hover,
+.spn_sc_list_area .list_style_03 li:after,
+.spn_sc_slider_1 .owl-prev:hover:before,
+.spn_sc_slider_1 .owl-next:hover:after,
+.sc_contact_info .social p a:hover,
+.sc_blog_post .date,
+.sc_box_title.style3:after,
+.sc_box_title.style4 h2,
+.sc_box_title.style3 h2,
+.sc_box_title.style4 h2:after,
+.sc_box_title.style4 h2:before,
+.sc_box_title.style5 h2:after,
+.sc_social.style2 a:hover,
+.sc_social.style4 a:after,
+.sc_social.style5 a:before,
+.sc_social.style5 a:after,
+.sc_social.style6 a:before,
+.sc_social.style6 a:after,
+.sc_social.style7 div a,
+.sc_testimonial .flex-direction-nav .flex-prev:after,
+.sc_testimonial .flex-direction-nav .flex-next:after,
+.sc_number_section .number,
+.sc_quote blockquote,
+.sc_code .panel,
+.sc_code .panel-heading,
+.sc_code .panel-body .btn-group,
+.sc_code .panel-body .btn-group button,
+#product .bx-wrapper .bx-pager.bx-default-pager a,
+#product .bx-wrapper .bx-pager.bx-default-pager a:hover,
+.header-top .social-links li a:hover,
+.member-profile .social-links li a:hover {
+	border-color: #EAB129;
+}
+
+.team .bx-controls-direction a:before,
+.team .bx-controls-direction a:after,
+.team .bx-controls-direction a:hover:before,
+.team .bx-controls-direction a:hover:after,
+.team .bx-controls-direction a:before,
+.team .bx-controls-direction a:after,
+.team .bx-controls-direction a:hover:before,
+.team .bx-controls-direction a:hover:after {
+    border-color: #EAB129!important;
+}
+
+.slide6 .slidecaption h3::before {
+    border-color: #EAB129 #EAB129 transparent transparent;
+}
+
+.contact4 .address:before {
+    border-color: transparent transparent transparent #EAB129;
+}
+
+.sc_box_title.style5:before{
+    border-bottom: 1px solid #EAB129;
+}
+
+.sc_box_title.style2 {
+    border-left-color:#EAB129;
+    border-right-color:#EAB129;
+}
+
+/*===============================
+	Box Shadow
+=================================*/
+
+
+.bx-wrapper .bx-pager.bx-default-pager a:after {
+    box-shadow: inset 0 0 0 5px #EAB129;
+}
+
+.comment_form_box .form-control:focus {
+  	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 
+                0 0 8px rgba(234,177,41,0.8);
+}
+
+.spn_sc_list_area .list_style_06 li:after {
+    box-shadow: 0 0 0 4px rgba(234,177,41, 0.4);
+}
