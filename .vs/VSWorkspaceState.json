@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\nft-contract",
+    "\\nft-contract\\src"
   ],
-  "SelectedNode": "\\C:\\Users\\jeelt\\Source\\Repos\\NFT-Staking",
+  "SelectedNode": "\\nft-contract",
   "PreviewInSolutionExplorer": false
 }

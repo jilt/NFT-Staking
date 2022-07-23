@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "build": "npm run build:contract && npm run build:web",
-    "build:contract": "cd nft-contract && bash build.sh && cd .. && ls && cd market-contract && bash build.sh && cd ..",
-    "build:contract:debug": "cd nft-contract && bash build.sh && cd .. && ls && cd market-contract && bash build.sh && cd ..",
+    "build:contract": "cd nft-contract && bash build.sh && cd ..",
+    "build:contract:debug": "cd nft-contract && bash build.sh && cd ..",
     "build:web": "parcel build src/index.html --public-url ./",
     "dev:deploy:contract": "near dev-deploy",
     "deploy:contract": "near deploy",
@@ -15,7 +15,7 @@
     "start": "echo The app is starting! It will automatically open in your browser when ready && env-cmd -f ./neardev/dev-account.env parcel src/index.html --open",
     "dev": "nodemon --watch nft-contract/src -e rs --exec \"npm run start\"",
     "test": "npm run build:contract:debug && cd nft-contract && cargo test -- --nocapture && cd .. && jest test --runInBand",
-    "makecontract": "cd nft-contract && ./build.sh && cd .. && ls && cd market-contract && ./build.sh && cd .."
+    "makecontract": "cd nft-contract && ./build.sh && cd .."
   },
   "devDependencies": {
     "@babel/core": "~7.14.0",
