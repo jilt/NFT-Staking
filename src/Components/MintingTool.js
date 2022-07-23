@@ -6,9 +6,8 @@ const BN = require("bn.js");
 import getConfig from "../config";
 const { networkId } = getConfig(process.env.NODE_ENV || "development");
 import * as nearApi from 'near-api-js';
-import { Web3Storage } from 'web3.storage/dist/bundle.esm.min.js';
-import { useFilePicker } from "use-file-picker";
 import Accordion from 'react-bootstrap/Accordion';
+import Collection from "./Collection";
 
 // import Unlockable from './Unlockable';
 
@@ -17,6 +16,7 @@ const MintingTool = (props) => {
 	//states for minting form
 	const [loading, update] = useState (false);
 	const [title, setTitle] = useState('');
+	const [NftId, setId] = useState('');
 	const [description, setDescription] = useState('');
 	const [media, setMedia] = useState('');
 	const [extra, setExtra] = useState('');
@@ -24,21 +24,8 @@ const MintingTool = (props) => {
 	const [royalties, setRoyalties] = useState({});
 	const [royalty, setRoyalty] = useState([]);
 	const [receiver, setReceiver] = useState([]);
-	const [files, setFiles] = useState(null);
-	const [unlock, setUnlock] = useState('');
-	const [link, setLink] = useState('');
 	
 
-//method to handle state form change when value is added
-	const client = new Web3Storage({ token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEM3MjJiZjA0MDA2MkYwOGJjNThCNWZmMGI1MjVGNjk5NkYzOGI1NmIiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NTQwODg3MzA1ODcsIm5hbWUiOiJNYXJrZXRwbGFjZS10ZXN0aW5nIn0.cR9NH6X2SLmr9B_3aW2cMyq3xvgtMAcuwOhdVEr1apE' });
-	const handleChange = (event) => {
-		
-		setValues((values) => ({
-			...values,
-		[event.target.name]: event.target.value,
-		}));
-	};
-	
 //check account existence for royalties
 	
 	const isAccountTaken = async (accountId) => {
@@ -54,30 +41,34 @@ const MintingTool = (props) => {
 		return false;
 	};
 	
-	const [openFileSelector, { filesContent, errors, plainFiles, clear }] = useFilePicker({
-     multiple: true,
-     readAs: 'DataURL',
-	 readFilesContent: false,
-     });
-	 if (errors.length) {
-		return (
-			<div>
-				<button onClick={() => openFileSelector()}>Something went wrong, retry! </button>
-			</div>
-		);
-	}
+  const checkUnlock = async () => {
+	  
+	  	var token_id = `${window.accountId}-varda`+ NftId();
+		return token_id;
+  }
+
 	
-	const handleChangeFile = (e) => {
-		const files = e.target.files;
-		setFiles(files);
-	}
-  
   const mintNFT = async () => {
 		if (!media.length || !validMedia) {
 			alert('Please enter a valid Image Link. You should see a preview below!');
 			return;
 		}
-
+		if (!title.length) {
+			alert('Please enter a valid Title for your NFT.');
+			return;
+		}
+		if (!NftId.length) {
+			alert('Please enter an unique ID for your NFT.');
+			return;
+		}
+		if (!description.length) {
+			alert('Please enter a Description for your NFT.');
+			return;
+		}
+		if (!extra.length) {
+			alert('Please enter a Collection name for your NFT.');
+			return;
+		}
 		// shape royalties data for minting and check max is < 50%
 		let perpetual_royalties = Object.entries(royalties).map(([receiver, royalty]) => ({
 			[receiver]: royalty * 100
@@ -88,6 +79,8 @@ const MintingTool = (props) => {
 	  
 		update('loading', true);
 		const metadata = { 
+			title,
+			description,
 			media,
 			extra,
 			issued_at: Date.now(),
@@ -95,7 +88,7 @@ const MintingTool = (props) => {
 		
 		await window.contract.nft_mint(
       {
-        token_id: `${window.accountId}-varda`+ Date.now(),
+        token_id: `${window.accountId}-varda-`+ NftId,
         metadata,
         receiver_id: window.accountId,
 		perpetual_royalties,
@@ -103,10 +96,10 @@ const MintingTool = (props) => {
       300000000000000, // attached GAS (optional)
       new BN("1000000000000000000000000")
     );
+	
 	update('loading', false);
 	setMetadata('');
-	handleChangeFile();
-	handleChangeImg();
+		
   };
 
   return (
@@ -126,6 +119,7 @@ const MintingTool = (props) => {
 		<Col>
 		<h4>Mint Your Art</h4>
 		<input style={{ margin: "1vh" }} className="full-width" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} /><br />
+		<input style={{ margin: "1vh" }} className="full-width" placeholder="Unique ID" value={NftId} onChange={(e) => setId(e.target.value)} /><br />
 		<input style={{ margin: "1vh" }} className="full-width" type="textarea" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
 		<input style={{ margin: "1vh" }} className="full-width" placeholder="Collection name" value={extra} onChange={(e) => setExtra(e.target.value)} />
 		<input style={{ margin: "1vh" }}className="full-width" placeholder="Image Link" value={media} onChange={(e) => setMedia(e.target.value)} />
@@ -149,56 +143,17 @@ const MintingTool = (props) => {
 		}
 		<input style={{ margin: "1vh" }} className="full-width" placeholder="Account ID" value={receiver} onChange={(e) => setReceiver(e.target.value)} />
 		<input style={{ margin: "1vh" }} type="number" className="full-width" placeholder="Percentage" value={royalty} onChange={(e) => setRoyalty(e.target.value)} />
-		<Button variant="outline-primary" onClick={async () => {
+		<Button style={{ margin: "1vh" }} variant="outline-primary" onClick={async () => {
 			const exists = await isAccountTaken(receiver);
 			if (!exists) return alert(`Account: ${receiver} does not exist on ${networkId ==='default' ? 'testnet' : 'mainnet'}.`);
 			setRoyalties(Object.assign({}, royalties, {
 				[receiver]: royalty
 			}));
 		}}>Add Royalty</Button>
-		
-		<h4 style={{ marginTop: "2vh" }}>Unlockable secret content</h4>
-		
-		<Accordion flush>
-			<Accordion.Item eventKey="0">
-				<Accordion.Header>File</Accordion.Header>
-				<Accordion.Body>
-					<p className="highlight">
-						<Button variant="outline-primary">
-							<label htmlFor="file-input" type="button" className="inputFile">
-							Select file
-							</label>
-						</Button>
-						<input id="file-input" type="file" placeholder="Select file" onChange={handleChangeFile} hidden={true} required={true}/>
-						<br/>
-						Number of selected files:
-						{files?.length > 0 ? " " + files.length : " " + 0}
-						{/* If readAs is set to DataURL, You can display an image */}
-						{!!filesContent.length && <img src={filesContent[0].content} />}
-						<br/>
-						{plainFiles.map(file => (
-						<div key={file.name}>{file.name}</div>
-						))}
-					</p>
-					<Button variant="outline-primary" onClick={() => clear()}>Clear</Button>
-					<Button variant="outline-primary" onClick={() => client.put(files).then(async (rootCid) => {
-					setUnlock( rootCid );
-					},
-					).catch(console.error)}>
-					Upload
-					</Button>
-				</Accordion.Body>
-			</Accordion.Item>
-			<Accordion.Item eventKey="1">
-				<Accordion.Header>Link</Accordion.Header>
-				<Accordion.Body>
-					<input style={{ margin: "1vh" }}className="full-width" placeholder="Custom Unlockable Link" value={link} onChange={(e) => setLink(e.target.value)} />
-				</Accordion.Body>
-			</Accordion.Item>
-		</Accordion>
-		
+		{ NftId && <Collection token_id={`${window.accountId}-varda-`+ NftId} onAdd={props.onAdd}/> }
 		</Col>
-		<Button variant="outline-primary" style={{ marginTop: "2vh" }} onClick={() => mintNFT()}>Mint</Button>
+		<br />
+		<Button variant="outline-primary" style={{ margin: "4vh" }} className="mintbutton" onClick={() => mintNFT()}>Mint</Button>
 	</>
 		  )}
         </Row>

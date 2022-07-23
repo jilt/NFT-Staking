@@ -6,7 +6,7 @@ import {
   Account,
   utils,
 } from "near-api-js";
-import getConfig from "./config";
+import getConfig from "./marketconfig";
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 
@@ -34,7 +34,7 @@ export async function initContract() {
   //making utils public
   window.utils = utils;
 
-  // Creating new account object
+  // Creating new account object for NFT minting/unlockables
   window.account = new Account(near, window.accountId);
   // Initializing our contract APIs by contract name and configuration
   window.contract = await new Contract(
@@ -42,9 +42,24 @@ export async function initContract() {
     nearConfig.contractName,
     {
       // View methods are read only. They don't modify the state, but usually return some value.
-      viewMethods: ["check_token"],
+	  viewMethods: [ 
+					'check_token',
+					'storage_balance_of',
+					'storage_minimum_balance', 
+					'get_sales_by_contract_id', 
+					'get_sales_by_owner_id',
+					'get_sales',
+                    'get_auctions',
+                    'get_auctions_by_contract_id',
+                    'get_auction_contract_and_token_id',
+					'nft_tokens_for_owner', 
+					"nft_token", 
+					"nft_total_supply",
+					'ft_metadata',
+					'ft_balance_of',
+                  ],
       // Change methods can modify the state. But you don't receive the returned value when called.
-      changeMethods: ["nft_mint"],
+      changeMethods: ['storage_deposit', "offer", "offer_auction", "claim_nft", "nft_mint", "nft_transfer", "nft_approve", "nft_auction_approve", 'ft_transfer_call',],
     }
   );
 }
@@ -61,4 +76,13 @@ export function login() {
   // This works by creating a new access key for the user's account and storing
   // the private key in localStorage.
   window.walletConnection.requestSignIn(nearConfig.contractName);
+}
+
+export function parseTokenWithDecimals(amount, decimals) {
+  let amountD = amount / Math.pow(10, decimals);
+  return Math.floor(amountD * 100 / 100);
+}
+
+export function parseTokenAmount(amount, decimals) {
+  return amount * Math.pow(10, decimals);
 }
