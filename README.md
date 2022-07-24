@@ -83,6 +83,11 @@ As you can see in `package.json`, this does two things:
 1. builds & deploys smart contract to NEAR TestNet
 2. builds & deploys frontend code to GitHub using [gh-pages]. This will only work if the project already has a repository set up on GitHub. Feel free to modify the `deploy` script in `package.json` to deploy elsewhere.
 
+Step 4: initialize the contract
+-------------------------------
+
+`near call $NFT_CONTRACT_ID new_default_meta '{"owner_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID`
+
 
 Troubleshooting
 ===============
