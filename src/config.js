@@ -1,4 +1,4 @@
-const CONTRACT_NAME = process.env.CONTRACT_NAME ||"marketplace.helpme.testnet";
+const CONTRACT_NAME = process.env.CONTRACT_NAME ||"varda.helpme.testnet";
 
 function getConfig(env) {
   switch (env) {
