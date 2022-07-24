@@ -1,6 +1,6 @@
 =======
 This marketplace is published under MIT license, so you can clone an use it as you like, here are the instructions to run it and the info about the Varda project.
-If you need help setting up the project consider (buying my NFTs here)[https://paras.id/jilt.near/creation] to get a free setup of the marketplace on your favourite hosting.
+If you need help setting up the project consider [buying my NFTs here](https://paras.id/jilt.near/creation) to get a free setup of the marketplace on your favourite hosting.
 
 Quick Start
 ===========
