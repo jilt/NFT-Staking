@@ -180,7 +180,7 @@ impl Contract {
         //return the Contract object
         this
     }
-
+    
     pub fn allow_minting_access(&mut self, account_id: AccountId) {
         assert_eq!(
             env::predecessor_account_id(),

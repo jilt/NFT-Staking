@@ -88,6 +88,14 @@ Step 4: initialize the contract
 
 `near call $NFT_CONTRACT_ID new_default_meta '{"owner_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID`
 
+Step 5: remember to allow minting to the artists near account for them to be able to mint
+
+`near call $NFT_CONTRACT_ID allow_minting_access '{"account_id": "xxx.near"}' --accountId $NFT_CONTRACT_ID`
+
+And on the allowlist constant in app.js line 53
+
+thanks to [Ben Kurrek](https://github.com/BenKurrek) for his contribution to this part of the code.
+
 
 Troubleshooting
 ===============

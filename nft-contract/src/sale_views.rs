@@ -28,6 +28,18 @@ impl Contract {
         }
     }
 
+    //get all sales for marketplace
+    
+    pub fn get_sales(&self, from_index: Option<U128>, limit: Option<u64>) -> Vec<Sale> {
+        let start = u128::from(from_index.unwrap_or(U128(0)));
+
+         self.sales.values()
+         .skip(start as usize)
+         .take(limit.unwrap_or(0) as usize)
+         .collect()
+    }
+
+
     //returns paginated sale objects for a given account. (result is a vector of sales)
     pub fn get_sales_by_owner_id(
         &self,

@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\nft-contract",
+    "\\nft-contract\\src"
   ],
-  "SelectedNode": "\\package.json",
+  "SelectedNode": "\\nft-contract\\src\\lib.rs",
   "PreviewInSolutionExplorer": false
 }

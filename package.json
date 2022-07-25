@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "build": "npm run build:contract && npm run build:web",
-    "build:contract": "cd nft-contract && bash build.sh && cd .. && cd nft-contract && bash build.sh && cd ..",
-    "build:contract:debug": "cd nft-contract && bash build.sh && cd .. && cd market-contract && bash build.sh && cd ..",
+    "build:contract": "cd nft-contract && bash build.sh && cd ..",
+    "build:contract:debug": "cd nft-contract && bash build.sh && cd ..",
     "build:web": "parcel build src/index.html --public-url ./",
     "dev:deploy:contract": "near dev-deploy",
     "deploy:contract": "near deploy",
