@@ -43,11 +43,11 @@ impl NonFungibleTokenApprovalsReceiver for Contract {
 
         //make sure that the signer isn't the predecessor. This is so that we're sure
         //this was called via a cross-contract call
-        assert_ne!(
-            nft_contract_id,
-            signer_id,
-            "nft_on_approve should only be called via cross-contract call"
-        );
+        //assert_ne!(
+        //    nft_contract_id,
+        //    signer_id,
+        //    "nft_on_approve should only be called via cross-contract call"
+        //);
         //make sure the owner ID is the signer. 
         assert_eq!(
             owner_id,

@@ -1,9 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\nft-contract",
-    "\\nft-contract\\src"
+    "\\src",
+    "\\src\\Components",
+    "\\src\\Components\\Modals"
   ],
-  "SelectedNode": "\\nft-contract\\src\\lib.rs",
+  "SelectedNode": "\\src\\Components\\Modals\\ModalSale.js",
   "PreviewInSolutionExplorer": false
 }

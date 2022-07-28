@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Modal from 'react-bootstrap/Modal';
-import { Form, Button, Card, Container, Row, Alert, Col } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import {default as PublicKey, transactions, utils} from "near-api-js"
 import { functionCall, createTransaction } from "near-api-js/lib/transaction";
 import {login, parseTokenAmount} from "../../utils";
@@ -11,11 +11,21 @@ const nearConfig = getConfig(process.env.NODE_ENV || 'development')
 
 
 function ModalSale(props) {
-	const [saleVisible, setSaleVisible] = useState(false);
-	const [currentToken, setCurrentToken] = useState(null);
+    const [saleVisible, setSaleVisible] = useState(false);
+    const [currentToken, setCurrentToken] = useState(null);
     const [price, setPrice] = useState(0);
     const [token, setToken] = useState("NEAR");
-	
+    const [saleConditions, setSaleConditions] = useState([]);
+
+    async function createSale(token_id, newSaleConditions) {
+    await account.functionCall(contractId, 'nft_approve', {
+        token_id,
+        account_id: marketId,
+        msg: JSON.stringify({ sale_conditions: newSaleConditions })
+    }, GAS, parseNearAmount('0.01'));
+}
+
+
 	function  getGas(gas) {
         return gas ? new BN(gas) : new BN('100000000000000');
     }
@@ -24,13 +34,9 @@ function ModalSale(props) {
     }
 
     function handleSaleToken(token) {
-        setCurrentToken(token);
+        setCurrentToken(props.nft.token_id);
 
         setSaleVisible(true);
-    }
-	
-    function handleOk() {
-        props.handleOk(token, price);
     }
 
     function handleTokenChange(e) {
@@ -39,7 +45,7 @@ function ModalSale(props) {
 	
 	// create transaction
 	
-	    async function createTransactionA({
+	async function createTransactionA({
         receiverId,
         actions,
         nonceOffset = 1,
@@ -98,8 +104,7 @@ function ModalSale(props) {
 	
 	    async function submitOnSale (token, price) {
         try {
-            if (price && currentToken.token_id) {
-
+                console.log(token);
                 let sale_conditions = token === "NEAR" ? 
                         {
                             is_native: true,
@@ -120,42 +125,23 @@ function ModalSale(props) {
 
                 // Submit sale
                 if (storageAccount > 0) {
-                    console.log("Data: ", storageAccount, utils.format.parseNearAmount("0.1"), nearConfig.contractName);
+                    console.log("StorageAmount: ", storageAccount, utils.format.parseNearAmount("0.1"), nearConfig.contractName);
                     await window.contract.nft_approve({
-                        token_id: currentToken.token_id,
+                        token_id: props.nft.token_id,
                         account_id: nearConfig.contractName,
                         msg: JSON.stringify({sale_conditions})
                     },
                     30000000000000, utils.format.parseNearAmount("0.01"));
                     setSaleVisible(false);
                 } else {
-                    notification["warning"]({
-                        message: 'Not enough Storage Balance',
-                        description:
-                          'Your Storage Balance is not enough to sell on a new NFT. Please refill!',
-                      });
+                    alert('Not enough Storage Balance');
                 }
-            }
 
         } catch (e) {
             console.log("Transfer error: ", e);
             setSaleVisible(false);
         } finally {
             setSaleVisible(false);
-        }
-    }
-	
-	    async function handleDeposit() {
-        if (window.walletConnection.isSignedIn()) {
-            await window.contract.storage_deposit(
-                {
-                    account_id: window.accountId,
-                },
-                30000000000000,
-                utils.format.parseNearAmount("1")
-            )
-        } else {
-            login();
         }
     }
 
@@ -180,31 +166,31 @@ function ModalSale(props) {
 	<Button variant="outline-primary" onClick={() => handleSaleToken(props.nft.token_id)} style={{ marginTop: "1vh" }}>
         Sell
     </Button>
-        <Modal title="Sale NFT" show={saleVisible} onHide={() => setSaleVisible(false)}>
+        <Modal title="Sell NFT" show={saleVisible} onHide={() => setSaleVisible(false)}>
 			<Modal.Header closeButton>
 				<Modal.Title id="sale-modal">
 				Select token ({token}):
 				</Modal.Title>
 			</Modal.Header>
-			<Modal.Body>
-            <Form style={{marginBottom: 30}} value={token} >
+                <Modal.Body>
+            <Form style={{marginBottom: 30}} >
 				<Form.Check 
 				type="switch"
 				id="near-switch"
 				value="NEAR"
 				label="NEAR"
-				onChange={handleTokenChange}
+                            onChange={handleTokenChange}
 				/>
 				<Form.Check 
 				type="switch"
 				id="stnear-switch"
 				value="STNEAR"
 				label="stNEAR"
-				onChange={handleTokenChange}
+                            onChange={handleTokenChange}
 				/>
 				<span style={{marginBottom: 10,  display: "block"}}>Input price ({token}):</span>
-                <input type={"number"} className="full-width" onChange={(e) => setPrice(e.target.value)} placeholder={"ex: 1000 ..."} size="large" /><br />
-				<Button variant="outline-primary" style={{ marginTop: "3vh" }} onClick={() => submitOnSale(props.nft.token_id, price)}>Sell this NFT</Button>
+                <input type={"number"} className="full-width" name="price" onChange={(e) => setPrice(e.target.value)} placeholder={"ex: 1000 ..."} size="large" /><br />
+                        <Button variant="outline-primary" style={{ marginTop: "3vh" }} onClick={submitOnSale}>Sell this NFT</Button>
             </Form>
             </Modal.Body>
         </Modal>

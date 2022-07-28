@@ -74,16 +74,24 @@ const Profile = (props) => {
 													<div>{props.dbUnlock.filter(lock => lock.id.match(new RegExp(nft.token_id, "i")))
 													.map(lockable =>
 													<>
-														{lockable.CID.length > 0 ? <Button variant="outline-primary"><a href={`https://${lockable.CID}.ipfs.dweb.link`} target="_blank" title="your locked content" alt="your locked content">Get unlockable</a></Button> 
-														: <Button variant="outline-primary"><a href={lockable.link} target="_blank" title="your locked content" alt="your locked content">Get unlockable</a></Button>}
+                                                            {lockable.CID.length > 0 ? <Card.Link href={`https://${lockable.CID}.ipfs.dweb.link`} target="_blank" title="your locked content" alt="your locked content">Get unlockable</Card.Link>
+                                                                : <Card.Link href={lockable.link} target="_blank" title="your locked content" alt="your locked content">Get unlockable</Card.Link>}
 													</>
 													)
 													}
 												</div>}
 											</div>
-											<br />
-											<Card.Text>Collection: {nft.metadata.extra}<br />{nft.metadata.description}<br />
-											Royalties: {Object.keys(nft.royalty)}</Card.Text>
+                                                <Card.Text><b>{nft.metadata.extra}</b><br /><b>{nft.metadata.description}</b><br />
+                                                    Royalties<br />
+                                                    {
+                                                        Object.keys(nft.royalty).length > 0 ?
+                                                            Object.entries(nft.royalty).map(([receiver, amount]) => <div key={receiver}>
+                                                                {receiver} - {amount / 100}%
+                                                            </div>)
+                                                            :
+                                                            <p>This token has no royalties.</p>
+                                                    }
+                                            </Card.Text>
 										<ModalTransferNFT nft={nft}/>
 										<ModalSale nft={nft}/>
 										<ModalAuction nft={nft}/>
