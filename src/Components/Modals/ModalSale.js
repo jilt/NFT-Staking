@@ -13,17 +13,10 @@ const nearConfig = getConfig(process.env.NODE_ENV || 'development')
 function ModalSale(props) {
     const [saleVisible, setSaleVisible] = useState(false);
     const [currentToken, setCurrentToken] = useState(null);
-    const [price, setPrice] = useState(0);
+    const [price, setPrice] = useState('');
     const [token, setToken] = useState("NEAR");
-    const [saleConditions, setSaleConditions] = useState([]);
-
-    async function createSale(token_id, newSaleConditions) {
-    await account.functionCall(contractId, 'nft_approve', {
-        token_id,
-        account_id: marketId,
-        msg: JSON.stringify({ sale_conditions: newSaleConditions })
-    }, GAS, parseNearAmount('0.01'));
-}
+    const [saleConditions, setSaleConditions] = useState({});
+    const [minimum, setMinimum] = useState('');
 
 
 	function  getGas(gas) {
@@ -40,125 +33,47 @@ function ModalSale(props) {
     }
 
     function handleTokenChange(e) {
+        e.preventDefault();
         setToken(e.target.value);
     }
-	
-	// create transaction
-	
-	async function createTransactionA({
-        receiverId,
-        actions,
-        nonceOffset = 1,
-    }) {
-        const localKey = await this.connection.signer.getPublicKey(
-            this.accountId,
-            this.connection.networkId
-        );
-        let accessKey = await this.accessKeyForTransaction(
-            receiverId,
-            actions,
-            localKey
-        );
-        if (!accessKey) {
-            throw new Error(
-                `Cannot find matching key for transaction sent to ${receiverId}`
-            );
-        }
-
-        const block = await this.connection.provider.block({ finality: 'final' });
-        const blockHash = baseDecode(block.header.hash);
-
-        const publicKey = PublicKey.from(accessKey.public_key);
-        const nonce = accessKey.access_key.nonce + nonceOffset;
-
-        return createTransaction(
-            this.accountId,
-            publicKey,
-            receiverId,
-            nonce,
-            actions,
-            blockHash
-        );
-    }
-
-    async function executeMultiTransactions(transactions, callbackUrl) {
-        const nearTransactions = await Promise.all(
-            transactions.map((t, i) => {
-                return createTransactionA({
-                    receiverId: t.receiverId,
-                    nonceOffset: i + 1,
-                    actions: t.functionCalls.map((fc) =>
-                        functionCall(
-                            fc.methodName,
-                            fc.args,
-                            getGas(fc.gas),
-                            getAmount(fc.amount)
-                        )
-                    ),
-                });
-            })
-        );
-
-        return window.walletConnection.requestSignTransactions(nearTransactions);
+    function handlePriceChange(e) {
+        let newSaleConditions = (e.target.value);
+        setPrice(newSaleConditions);
+        console.log(price);
+        let sale_conditions = {sale_conditions: newSaleConditions };
+        setSaleConditions(sale_conditions);
     }
 	
-	    async function submitOnSale (token, price) {
-        try {
-                console.log(token);
-                let sale_conditions = token === "NEAR" ? 
-                        {
-                            is_native: true,
-                            contract_id: "near",
-                            decimals: "24",
-                            amount: utils.format.parseNearAmount(price.toString())
-                        } : {
-                            is_native: false,
-                            contract_id: window.contract.contractId,
-                            decimals: "18",
-                            amount: parseTokenAmount(price, 18).toLocaleString('fullwide', {useGrouping:false})
-                        };
+    async function submitOnSale(token, newSaleConditions) {
+        sendStorageDeposit();
+        let sale_conditions = {
+            sale_conditions: utils.format.parseNearAmount(price),
+        };
+        await window.contractNFT.nft_approve({
+            token_id: currentToken.token_id,
+            account_id: nearConfig.marketContractName,
+            msg: JSON.stringify({ sale_conditions })
+        },
+            30000000000000, utils.format.parseNearAmount("0.01"));
+        setSaleVisible(false);
+    };
 
-                // Check storage balance
-                let storageAccount = await window.contract.storage_balance_of({
-                    account_id: window.accountId
-                });
-
-                // Submit sale
-                if (storageAccount > 0) {
-                    console.log("StorageAmount: ", storageAccount, utils.format.parseNearAmount("0.1"), nearConfig.contractName);
-                    await window.contract.nft_approve({
-                        token_id: props.nft.token_id,
-                        account_id: nearConfig.contractName,
-                        msg: JSON.stringify({sale_conditions})
-                    },
-                    30000000000000, utils.format.parseNearAmount("0.01"));
-                    setSaleVisible(false);
-                } else {
-                    alert('Not enough Storage Balance');
-                }
-
-        } catch (e) {
-            console.log("Transfer error: ", e);
-            setSaleVisible(false);
-        } finally {
-            setSaleVisible(false);
-        }
+    const sendStorageDeposit = async () => {
+        getMinimumStorage();
+        await walletConnection.account().functionCall({
+            contractId: window.contractMarket,
+            methodName: "storage_deposit",
+            args: {},
+            attachedDeposit: minimum,
+        })
     }
 
-    async function handleRegisToken() {
-        if (window.walletConnection.isSignedIn()) {
-            await window.contract.storage_deposit(
-                {
-                    account_id: window.accountId,
-                },
-                30000000000000,
-                utils.format.parseNearAmount("0.01")
-            )
-        } else {
-            login();
-        }
+    const getMinimumStorage = async () => {
+        let minimum_balance = await walletConnection
+            .account()
+            .viewFunction(nearConfig.marketContractName, "storage_minimum_balance")
+        setMinimum(minimum_balance);
     }
-	
 	
     return (
 	
@@ -170,27 +85,29 @@ function ModalSale(props) {
 			<Modal.Header closeButton>
 				<Modal.Title id="sale-modal">
 				Select token ({token}):
-				</Modal.Title>
+                </Modal.Title>
 			</Modal.Header>
                 <Modal.Body>
-            <Form style={{marginBottom: 30}} >
+                    <Form style={{ marginBottom: 30 }} >
 				<Form.Check 
 				type="switch"
 				id="near-switch"
 				value="NEAR"
-				label="NEAR"
-                            onChange={handleTokenChange}
+                label="NEAR"
+                disabled
+                onChange={handleTokenChange}
 				/>
 				<Form.Check 
 				type="switch"
 				id="stnear-switch"
 				value="STNEAR"
-				label="stNEAR"
-                            onChange={handleTokenChange}
+                label="stNEAR"
+                disabled
+                onChange={handleTokenChange}
 				/>
 				<span style={{marginBottom: 10,  display: "block"}}>Input price ({token}):</span>
-                <input type={"number"} className="full-width" name="price" onChange={(e) => setPrice(e.target.value)} placeholder={"ex: 1000 ..."} size="large" /><br />
-                        <Button variant="outline-primary" style={{ marginTop: "3vh" }} onClick={submitOnSale}>Sell this NFT</Button>
+                        <input className="full-width" type="number" placeholder={"ex: 1000 ..."} onChange={handlePriceChange} size="large" /><br />
+                        <Button variant="outline-primary" style={{ marginTop: "3vh" }} onClick={submitOnSale}>Sell this NFT for { price } NEAR</Button>
             </Form>
             </Modal.Body>
         </Modal>

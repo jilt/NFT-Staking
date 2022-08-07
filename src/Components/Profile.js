@@ -1,59 +1,18 @@
 import React, { useEffect, useState} from 'react'
 import getConfig from '../config'
-import { Form, Button, Card, Container, Row, Alert, Col } from "react-bootstrap";
-import Modal from 'react-bootstrap/Modal';
-import Accordion from 'react-bootstrap/Accordion';
+import { Card, Row, Col } from "react-bootstrap";
 import ModalTransferNFT from "./Modals/ModalTransferNFT";
 import ModalSale from "./Modals/ModalSale";
-import ModalAuction from "./Modals/ModalAuction";
-import {default as PublicKey, transactions, utils} from "near-api-js"
-import { functionCall, createTransaction } from "near-api-js/lib/transaction";
-import {login, parseTokenAmount} from "../utils";
-import BN from "bn.js";
-import {baseDecode} from "borsh";
 
 const nearConfig = getConfig(process.env.NODE_ENV || 'development')
 
 
 
 const Profile = (props) => {
-	
-	//states for marketplace funtions
-	const [auctionVisible, setAuctionVisible] = useState(false);
-	const [currentToken, setCurrentToken] = useState(null);
+
 
 	
-	    async function handleDeposit() {
-        if (window.walletConnection.isSignedIn()) {
-            await window.contract.storage_deposit(
-                {
-                    account_id: window.accountId,
-                },
-                30000000000000,
-                utils.format.parseNearAmount("1")
-            )
-        } else {
-            login();
-        }
-    }
-
-    async function handleRegisToken() {
-        if (window.walletConnection.isSignedIn()) {
-            await window.contract.storage_deposit(
-                {
-                    account_id: window.accountId,
-                },
-                30000000000000,
-                utils.format.parseNearAmount("0.01")
-            )
-        } else {
-            login();
-        }
-    }
-	
-	
-	
-	return (
+return (
 <Row md={3} xs={1}style={{ marginTop: "3vh" }}>
                     {
                         props.nfts.map((nft) => {
@@ -81,7 +40,7 @@ const Profile = (props) => {
 													}
 												</div>}
 											</div>
-                                                <Card.Text><b>{nft.metadata.extra}</b><br /><b>{nft.metadata.description}</b><br />
+                                                <Card.Text><b>{nft.metadata.extra}</b><br />{nft.metadata.description}<br />
                                                     Royalties<br />
                                                     {
                                                         Object.keys(nft.royalty).length > 0 ?
@@ -92,9 +51,12 @@ const Profile = (props) => {
                                                             <p>This token has no royalties.</p>
                                                     }
                                             </Card.Text>
-										<ModalTransferNFT nft={nft}/>
-										<ModalSale nft={nft}/>
-										<ModalAuction nft={nft}/>
+                                        
+                                                {
+                                                    nft.approved_account_ids[nearConfig.marketContractName] >= 0 ? Object.entries(nft.approved_account_ids).map(([contract, id]) => <div key={id}><p>On sale on: {contract}</p></div>) : <><ModalTransferNFT nft={nft} />
+                                                <ModalSale nft={nft} /></>
+                                                }
+
 										</Card.Body>
                                     </Card>
 									</Col>

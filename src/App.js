@@ -1,7 +1,6 @@
 import "regenerator-runtime/runtime";
 import React, { useEffect, useState } from "react";
 import { login, logout } from "./utils";
-import { Web3Storage } from 'web3.storage/dist/bundle.esm.min.js';
 
 // React and custom Bootstrap css
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -14,10 +13,9 @@ import Accordion from 'react-bootstrap/Accordion';
 
 // Custom Components
 import MintingTool from "./Components/MintingTool";
-import InfoBubble from "./Components/InfoBubble";
 import Collection from "./Components/Collection";
-import Token from "./Components/Token";
 import Profile from "./Components/Profile";
+import MarketPlace from "./Components/MarketPlace";
 
 
 // assets
@@ -25,7 +23,7 @@ import Logo from "./assets/logo-white.svg";
 
 // near config
 import getConfig from "./config";
-const { networkId, nodeUrl } = getConfig(process.env.NODE_ENV || "development");
+const { nearConfig } = getConfig(process.env.NODE_ENV || "development");
 import * as nearApi from 'near-api-js';
 
 		
@@ -72,33 +70,28 @@ const [marketdata, setMarketData] = useState([]);
             let data  = await window.contract.nft_tokens_for_owner({"account_id": window.accountId, "from_index": "0", "limit": 100});
             setNFTs(data);
         }
-    }, []);
-	
- useEffect(async () => {
-        try {
-            let marketdata  = await window.contract.get_sales(
-                {
-                    from_index: "0",
-                    limit: 10
-                }
-            );
+  }, []);
 
-            let mapItemData = marketdata.map(async item => {
-                let itemData =  await window.contract.nft_token({token_id: item.token_id});
-                
-                return {
-                    ...item,
-                    itemData
-                }
-            });
-        
-            let marketdataNew = await Promise.all(mapItemData);
-            console.log("Data market: ", marketdataNew);
-            setMarketData(marketdataNew);
-        } catch (e) {
-            console.log(e);
-        }
-    }, []);
+	useEffect(() => {
+
+		const getSales = async () => {
+		let sales = await walletConnection
+			.account()
+			.viewFunction(
+				nearConfig.marketContractName,
+				"get_sales_by_nft_contract_id",
+				{
+					nft_contract_id: nearConfig.marketContractName,
+					from_index: "0",
+					limit: 64,
+				}
+			);
+			console.log(sales);
+		};
+
+		getSales();
+
+	}, []);
 
 	
 	// get list of minted NFTs
@@ -252,8 +245,7 @@ function getUnlock(){
 				<Accordion.Item eventKey="0">
 					<Accordion.Header>On Sale</Accordion.Header>
 					<Accordion.Body>
-						<h5>Last NFT listed on Varda's marketplace</h5>
-						<Token list={totalNFTs}/>
+						<MarketPlace/>
 					</Accordion.Body>
 				</Accordion.Item>
 				<Accordion.Item eventKey="1">

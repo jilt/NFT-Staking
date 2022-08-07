@@ -6,7 +6,7 @@ import {
   Account,
   utils,
 } from "near-api-js";
-import getConfig from "./marketconfig";
+import getConfig from "./config";
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 
@@ -44,24 +44,31 @@ export async function initContract() {
       // View methods are read only. They don't modify the state, but usually return some value.
 	  viewMethods: [ 
 					'check_token',
-					'storage_balance_of',
-					'storage_minimum_balance', 
-					'get_sales_by_contract_id', 
-					'get_sales_by_owner_id',
-					'get_sales',
-                    'get_auctions',
-                    'get_auctions_by_contract_id',
-                    'get_auction_contract_and_token_id',
 					'nft_tokens_for_owner', 
-					"nft_token", 
+                    "nft_token",
+                    'nft_tokens',
 					"nft_total_supply",
 					'ft_metadata',
 					'ft_balance_of',
                   ],
       // Change methods can modify the state. But you don't receive the returned value when called.
-      changeMethods: ['storage_deposit', "offer", "offer_auction", "claim_nft", "nft_mint", "nft_transfer", "nft_approve", "nft_auction_approve", 'ft_transfer_call',],
+      changeMethods: ["nft_mint", "nft_transfer", "nft_approve", "nft_auction_approve", 'ft_transfer_call',],
     }
-  );
+    );
+  // Initializing our market contract APIs by contract name and config 
+    window.contractMarket = await new Contract(window.walletConnection.account(), nearConfig.marketContractName, {
+        // View methods are read only. They don't modify the state, but usually return some value.
+        viewMethods: [
+            'storage_balance_of',
+            'storage_minimum_balance',
+            'get_sales_by_contract_id',
+            'get_auctions',
+            'get_auctions_by_contract_id',
+            'get_auction_contract_and_token_id',
+        ],
+        // Change methods can modify the state. But you don't receive the returned value when called.
+        changeMethods: ['storage_deposit', 'storate_deposit', "offer", "offer_auction", "claim_nft"],
+    });
 }
 
 export function logout() {
