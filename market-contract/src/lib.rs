@@ -1,251 +1,185 @@
-use near_sdk::{AccountId, near_bindgen, PanicOnDefault, Balance, env, Promise, CryptoHash, ext_contract, Gas, PromiseOrValue};
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
+use near_sdk::collections::{LookupMap, UnorderedMap, UnorderedSet};
 use near_sdk::json_types::{U128, U64};
-use near_sdk::serde::{Serialize, Deserialize};
-use near_sdk::collections::{LookupMap, UnorderedSet, UnorderedMap};
+use near_sdk::serde::{Deserialize, Serialize};
+use near_sdk::{
+    assert_one_yocto, env, ext_contract, near_bindgen, AccountId, Balance, Gas, PanicOnDefault,
+    Promise, CryptoHash, BorshStorageKey,
+};
+use std::collections::HashMap;
 
-pub use crate::sale_view::*;
-pub use crate::utils::*;
-pub use crate::nft_callback::*;
-pub use crate::sale::*;
-pub use crate::ft_callback::*;
-pub use crate::auction_view::*;
-pub use crate::nft_auction_callback::*;
-pub use crate::auction::*;
+use crate::external::*;
+use crate::internal::*;
+use crate::sale::*;
+use near_sdk::env::STORAGE_PRICE_PER_BYTE;
 
-const STORAGE_PER_SALE: u128 = 1000 * env::STORAGE_PRICE_PER_BYTE;
-
-mod sale_view;
-mod utils;
-mod sale;
-mod nft_callback;
+mod external;
 mod internal;
-mod ft_callback;
-mod auction_view;
-mod nft_auction_callback;
-mod auction;
+mod nft_callbacks;
+mod sale;
+mod sale_views;
 
+//GAS constants to attach to calls
+const GAS_FOR_ROYALTIES: Gas = Gas(115_000_000_000_000);
+const GAS_FOR_NFT_TRANSFER: Gas = Gas(15_000_000_000_000);
+
+//constant used to attach 0 NEAR to a call
+const NO_DEPOSIT: Balance = 0;
+
+//the minimum storage to have a sale on the contract.
+const STORAGE_PER_SALE: u128 = 1000 * STORAGE_PRICE_PER_BYTE;
+
+//every sale will have a unique ID which is `CONTRACT + DELIMITER + TOKEN_ID`
+static DELIMETER: &str = ".";
+
+//Creating custom types to use within the contract. This makes things more readable. 
+pub type SalePriceInYoctoNear = U128;
 pub type TokenId = String;
-pub type NFTContractId = String;
-pub type ContractAndTokenId = String; //nft-tutorial.vbidev.testnet.VBI_NFT#01
-
-#[derive(Deserialize, Serialize, BorshSerialize, BorshDeserialize)]
+pub type FungibleTokenId = AccountId;
+pub type ContractAndTokenId = String;
+//defines the payout type we'll be parsing from the NFT contract as a part of the royalty standard.
+#[derive(Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
-pub struct SalePrice {
-    is_native: bool,
-    contract_id: AccountId,
-    decimals: U64,
-    amount: U128
-}
+pub struct Payout {
+    pub payout: HashMap<AccountId, U128>,
+} 
 
-#[derive(Deserialize, Serialize, BorshSerialize, BorshDeserialize)]
-#[serde(crate = "near_sdk::serde")]
-pub struct AuctionPrice {
-    is_native: bool,
-    contract_id: AccountId,
-    decimals: U64,
-    start_price: U128,
-    start_time: U64,
-    end_time: U64,
-}
 
-#[derive(Deserialize, Serialize, BorshSerialize, BorshDeserialize)]
-#[serde(crate = "near_sdk::serde")]
-pub struct SaleV1 {
-    pub owner_id: AccountId,
-    pub approval_id: u64,
-    pub nft_contract_id: NFTContractId,
-    pub token_id: TokenId,
-    pub sale_conditions: U128
-}
-
-#[derive(Deserialize, Serialize, BorshSerialize, BorshDeserialize)]
-#[serde(crate = "near_sdk::serde")]
-pub struct Sale {
-    pub owner_id: AccountId,
-    pub approval_id: u64,
-    pub nft_contract_id: NFTContractId,
-    pub token_id: TokenId,
-    pub sale_conditions: SalePrice
-}
-
-#[derive(Deserialize, Serialize, BorshSerialize, BorshDeserialize)]
-#[serde(crate = "near_sdk::serde")]
-pub struct Auction {
-    pub owner_id: AccountId,
-    pub approval_id: u64,
-    pub nft_contract_id: NFTContractId,
-    pub token_id: TokenId,
-    pub auction_conditions: AuctionPrice,
-    pub current_price: U128,
-    pub winner: AccountId,
-    pub is_near_claimed: bool,
-    pub is_nft_claimed: bool,
-}
-
-#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
-pub struct ContractV1 {
-    // Owner of contract
-    pub owner_id: AccountId,
-
-    // Sales của token
-    pub sales: UnorderedMap<ContractAndTokenId, SaleV1>,
-
-    // Danh sách sales theo account id
-    pub by_owner_id: LookupMap<AccountId, UnorderedSet<ContractAndTokenId>>,
-
-    // Danh sách token_id đang được đăng bán của 1 nft contract
-    pub by_contract_id: LookupMap<NFTContractId, UnorderedSet<TokenId>>,
-
-    // Danh sach Auctions cua token
-    pub auctions: UnorderedMap<ContractAndTokenId, Auction>,
-
-    // Danh sach Auctions theo accountId
-    pub auctions_by_owner: LookupMap<AccountId, UnorderedSet<ContractAndTokenId>>,
-
-    // Danh sách token_id đang được dau gia của 1 nft contract
-    pub auction_by_contract_id: LookupMap<NFTContractId, UnorderedSet<TokenId>>,
-
-    // Danh sách account deposit để cover storage
-    pub storage_deposit: LookupMap<AccountId, Balance>
-}
-
+//main contract struct to store all the information
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Contract {
-    // Owner of contract
+    //keep track of the owner of the contract
     pub owner_id: AccountId,
-
-    // Sales của token
+    
+    /*
+        to keep track of the sales, we map the ContractAndTokenId to a Sale. 
+        the ContractAndTokenId is the unique identifier for every sale. It is made
+        up of the `contract ID + DELIMITER + token ID`
+    */
     pub sales: UnorderedMap<ContractAndTokenId, Sale>,
-
-    // Danh sách sales theo account id
+    
+    //keep track of all the Sale IDs for every account ID
     pub by_owner_id: LookupMap<AccountId, UnorderedSet<ContractAndTokenId>>,
 
-    // Danh sách token_id đang được đăng bán của 1 nft contract
-    pub by_contract_id: LookupMap<NFTContractId, UnorderedSet<TokenId>>,
+    //keep track of all the token IDs for sale for a given contract
+    pub by_nft_contract_id: LookupMap<AccountId, UnorderedSet<TokenId>>,
 
-    // Danh sach Auctions cua token
-    pub auctions: UnorderedMap<ContractAndTokenId, Auction>,
-
-    // Danh sach Auctions theo accountId
-    pub auctions_by_owner: LookupMap<AccountId, UnorderedSet<ContractAndTokenId>>,
-
-    // Danh sách token_id đang được dau gia của 1 nft contract
-    pub auction_by_contract_id: LookupMap<NFTContractId, UnorderedSet<TokenId>>,
-
-    // Danh sách account deposit để cover storage
-    pub storage_deposit: LookupMap<AccountId, Balance>
-    
+    //keep track of the storage that accounts have payed
+    pub storage_deposits: LookupMap<AccountId, Balance>,
 }
 
-impl From<ContractV1> for Contract {
-    fn from(contract: ContractV1) -> Self {
-        // Remove all old sale type
-        let sales = UnorderedMap::new(StorageKey::SaleKey.try_to_vec().unwrap());
-        Self {
-            owner_id: contract.owner_id,
-            by_owner_id: contract.by_owner_id,
-            by_contract_id: contract.by_contract_id,
-            storage_deposit: contract.storage_deposit,
-            sales,
-            auctions: contract.auctions,
-            auctions_by_owner: contract.auctions_by_owner,
-            auction_by_contract_id :contract.auction_by_contract_id,
-        }
-    }
-}
-
-#[derive(BorshDeserialize, BorshSerialize)]
+/// Helper structure to for keys of the persistent collections.
+#[derive(BorshStorageKey, BorshSerialize)]
 pub enum StorageKey {
-    SaleKey,
-    ByOwnerIdKey,
-    InnterByOwnerIdKey {
-        account_id_hash: CryptoHash
-    },
-    InnterAuctionsByOwnerKey {
-        account_id_hash: CryptoHash
-    },
-    ByContractIdKey,
-    InnerByContractIdKey {
-        account_id_hash: CryptoHash
-    },
-    InnerAuctionByContractIdKey {
-        account_id_hash: CryptoHash
-    },
-    StorageDepositKey,
-    AuctionsKey,
-    AuctionsByOwnerKey,
-    AuctionByContractIdKey,
+    Sales,
+    ByOwnerId,
+    ByOwnerIdInner { account_id_hash: CryptoHash },
+    ByNFTContractId,
+    ByNFTContractIdInner { account_id_hash: CryptoHash },
+    ByNFTTokenType,
+    ByNFTTokenTypeInner { token_type_hash: CryptoHash },
+    FTTokenIds,
+    StorageDeposits,
 }
 
 #[near_bindgen]
 impl Contract {
-
+    /*
+        initialization function (can only be called once).
+        this initializes the contract with default data and the owner ID
+        that's passed in
+    */
     #[init]
     pub fn new(owner_id: AccountId) -> Self {
-        Self {
+        let this = Self {
+            //set the owner_id field equal to the passed in owner_id. 
             owner_id,
-            sales: UnorderedMap::new(StorageKey::SaleKey.try_to_vec().unwrap()),
-            by_owner_id: LookupMap::new(StorageKey::ByOwnerIdKey.try_to_vec().unwrap()),
-            by_contract_id: LookupMap::new(StorageKey::ByContractIdKey.try_to_vec().unwrap()),
-            auctions:UnorderedMap::new(StorageKey::AuctionsKey.try_to_vec().unwrap()),
-            auctions_by_owner:LookupMap::new(StorageKey::AuctionsByOwnerKey.try_to_vec().unwrap()),
-            auction_by_contract_id:LookupMap::new(StorageKey::AuctionByContractIdKey.try_to_vec().unwrap()),
-            storage_deposit: LookupMap::new(StorageKey::StorageDepositKey.try_to_vec().unwrap())
-        }
+
+            //Storage keys are simply the prefixes used for the collections. This helps avoid data collision
+            sales: UnorderedMap::new(StorageKey::Sales),
+            by_owner_id: LookupMap::new(StorageKey::ByOwnerId),
+            by_nft_contract_id: LookupMap::new(StorageKey::ByNFTContractId),
+            storage_deposits: LookupMap::new(StorageKey::StorageDeposits),
+        };
+
+        //return the Contract object
+        this
     }
 
+    //Allows users to deposit storage. This is to cover the cost of storing sale objects on the contract
+    //Optional account ID is to users can pay for storage for other people.
     #[payable]
     pub fn storage_deposit(&mut self, account_id: Option<AccountId>) {
-        let storage_account_id = account_id.unwrap_or(env::predecessor_account_id());
+        //get the account ID to pay for storage for
+        let storage_account_id = account_id 
+            //convert the valid account ID into an account ID
+            .map(|a| a.into())
+            //if we didn't specify an account ID, we simply use the caller of the function
+            .unwrap_or_else(env::predecessor_account_id);
+
+        //get the deposit value which is how much the user wants to add to their storage
         let deposit = env::attached_deposit();
 
-        assert!(deposit >= STORAGE_PER_SALE, "Requires deposit minimum of {}", STORAGE_PER_SALE);
+        //make sure the deposit is greater than or equal to the minimum storage for a sale
+        assert!(
+            deposit >= STORAGE_PER_SALE,
+            "Requires minimum deposit of {}",
+            STORAGE_PER_SALE
+        );
 
-        let mut balance = self.storage_deposit.get(&storage_account_id).unwrap_or(0);
+        //get the balance of the account (if the account isn't in the map we default to a balance of 0)
+        let mut balance: u128 = self.storage_deposits.get(&storage_account_id).unwrap_or(0);
+        //add the deposit to their balance
         balance += deposit;
-
-        self.storage_deposit.insert(&storage_account_id, &balance);
+        //insert the balance back into the map for that account ID
+        self.storage_deposits.insert(&storage_account_id, &balance);
     }
 
+    //Allows users to withdraw any excess storage that they're not using. Say Bob pays 0.01N for 1 sale
+    //Alice then buys Bob's token. This means bob has paid 0.01N for a sale that's no longer on the marketplace
+    //Bob could then withdraw this 0.01N back into his account. 
     #[payable]
     pub fn storage_withdraw(&mut self) {
+        //make sure the user attaches exactly 1 yoctoNEAR for security purposes.
+        //this will redirect them to the NEAR wallet (or requires a full access key). 
         assert_one_yocto();
+
+        //the account to withdraw storage to is always the function caller
         let owner_id = env::predecessor_account_id();
-
-        let amount = self.storage_deposit.remove(&owner_id).unwrap_or(0);
-        let sales = self.by_owner_id.get(&owner_id);
+        //get the amount that the user has by removing them from the map. If they're not in the map, default to 0
+        let mut amount = self.storage_deposits.remove(&owner_id).unwrap_or(0);
         
-        let len = sales.map(| s | s.len()).unwrap_or_default();
+        //how many sales is that user taking up currently. This returns a set
+        let sales = self.by_owner_id.get(&owner_id);
+        //get the length of that set. 
+        let len = sales.map(|s| s.len()).unwrap_or_default();
+        //how much NEAR is being used up for all the current sales on the account 
+        let diff = u128::from(len) * STORAGE_PER_SALE;
 
-        let storage_required = u128::from(len) * STORAGE_PER_SALE;
+        //the excess to withdraw is the total storage paid - storage being used up.
+        amount -= diff;
 
-        assert!(amount >= storage_required);
-
-        let diff = amount - storage_required;
-
-        if diff > 0 {
-            Promise::new(owner_id.clone()).transfer(diff);
+        //if that excess to withdraw is > 0, we transfer the amount to the user.
+        if amount > 0 {
+            Promise::new(owner_id.clone()).transfer(amount);
         }
-
-        if storage_required > 0 {
-            self.storage_deposit.insert(&owner_id, &storage_required);
+        //we need to add back the storage being used up into the map if it's greater than 0.
+        //this is so that if the user had 500 sales on the market, we insert that value here so
+        //if those sales get taken down, the user can then go and withdraw 500 sales worth of storage.
+        if diff > 0 {
+            self.storage_deposits.insert(&owner_id, &diff);
         }
     }
 
+    /// views
+    //return the minimum storage for 1 sale
     pub fn storage_minimum_balance(&self) -> U128 {
         U128(STORAGE_PER_SALE)
     }
 
+    //return how much storage an account has paid for
     pub fn storage_balance_of(&self, account_id: AccountId) -> U128 {
-        U128(self.storage_deposit.get(&account_id).unwrap_or(0))
-    }
-
-    #[private]
-    #[init(ignore_state)]
-    pub fn migrate() -> Self {
-        let old_data: ContractV1 = env::state_read().expect("Not read state");
-        Self::from(old_data)
+        U128(self.storage_deposits.get(&account_id).unwrap_or(0))
     }
 }

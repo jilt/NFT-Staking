@@ -1,71 +1,67 @@
-const CONTRACT_NAME = process.env.CONTRACT_NAME ||"varda.testnet";
-const MARKET_CONTRACT_NAME = process.env.MARKET_CONTRACT_NAME || "market.varda.testnet";
+const CONTRACT_NAME = process.env.CONTRACT_NAME || 'nft.varda.testnet';
+const MARKET_CONTRACT_NAME = process.env.MARKET_CONTRACT_NAME || 'market.varda.testnet';
+
 
 function getConfig(env) {
-  switch (env) {
-    case "production":
-    case "mainnet":
+  switch(env) {
+    case 'production':
+    case 'mainnet':
       return {
-        networkId: "mainnet",
-        nodeUrl: "https://rpc.mainnet.near.org",
+        networkId: 'mainnet',
+        nodeUrl: 'https://rpc.mainnet.near.org',
         contractName: CONTRACT_NAME,
-		marketContractName: MARKET_CONTRACT_NAME,
-        walletUrl: "https://wallet.near.org",
-        helperUrl: "https://helper.mainnet.near.org",
-        explorerUrl: "https://explorer.mainnet.near.org",
+        marketContractName: MARKET_CONTRACT_NAME,
+        walletUrl: 'https://wallet.near.org',
+        helperUrl: 'https://helper.mainnet.near.org'
       };
-    case "development":
-    case "testnet":
+    case 'development':
+    case 'testnet':
       return {
-        networkId: "testnet",
-        nodeUrl: "https://rpc.testnet.near.org",
+        networkId: 'testnet',
+        nodeUrl: 'https://rpc.testnet.near.org',
         contractName: CONTRACT_NAME,
-		marketContractName: MARKET_CONTRACT_NAME,
-		GAS: "200000000000000",
-        walletUrl: "https://wallet.testnet.near.org",
-        helperUrl: "https://helper.testnet.near.org",
-        explorerUrl: "https://explorer.testnet.near.org",
+        marketContractName: MARKET_CONTRACT_NAME,
+        GAS: "200000000000000",
+        walletUrl: 'https://wallet.testnet.near.org',
+        helperUrl: 'https://helper.testnet.near.org',
       };
-    case "betanet":
+    case 'betanet':
       return {
-        networkId: "betanet",
-        nodeUrl: "https://rpc.betanet.near.org",
+        networkId: 'betanet',
+        nodeUrl: 'https://rpc.betanet.near.org',
         contractName: CONTRACT_NAME,
-		marketContactName: MARKET_CONTRACT_NAME,
-        walletUrl: "https://wallet.betanet.near.org",
-        helperUrl: "https://helper.betanet.near.org",
-        explorerUrl: "https://explorer.betanet.near.org",
+        marketContactName: MARKET_CONTRACT_NAME,
+        walletUrl: 'https://wallet.betanet.near.org',
+        helperUrl: 'https://helper.betanet.near.org'
       };
-    case "local":
+    case 'local':
       return {
-        networkId: "local",
-        nodeUrl: "http://localhost:3030",
+        networkId: 'local',
+        nodeUrl: 'http://localhost:3030',
         keyPath: `${process.env.HOME}/.near/validator_key.json`,
-        walletUrl: "http://localhost:4000/wallet",
+        walletUrl: 'http://localhost:4000/wallet',
         contractName: CONTRACT_NAME,
-		marketContactName: MARKET_CONTRACT_NAME,
+        marketContactName: MARKET_CONTRACT_NAME,
       };
-    case "test":
-    case "ci":
+    case 'test':
+    case 'ci':
       return {
-        networkId: "shared-test",
-        nodeUrl: "https://rpc.ci-testnet.near.org",
+        networkId: 'shared-test',
+        nodeUrl: 'https://rpc.ci-testnet.near.org',
         contractName: CONTRACT_NAME,
-		marketContactName: MARKET_CONTRACT_NAME,
-        masterAccount: "test.near",
+        marketContactName: MARKET_CONTRACT_NAME,
+        masterAccount: 'test.near'
       };
-    case "ci-betanet":
+    case 'ci-betanet':
       return {
-        networkId: "shared-test-staging",
-        nodeUrl: "https://rpc.ci-betanet.near.org",
+        networkId: 'shared-test-staging',
+        nodeUrl: 'https://rpc.ci-betanet.near.org',
         contractName: CONTRACT_NAME,
-		marketContactName: MARKET_CONTRACT_NAME,
-        masterAccount: "test.near",
+        marketContactName: MARKET_CONTRACT_NAME,
+        masterAccount: 'test.near'
       };
     default:
-      throw Error(
-        `Unconfigured environment '${env}'. Can be configured in src/config.js.`
-      );
+      throw Error(`Unconfigured environment '${env}'. Can be configured in src/config.js.`);
   }
 }
 

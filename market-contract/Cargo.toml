@@ -1,8 +1,8 @@
 [package]
-name = "Varda-NFT-market_contract"
+name = "market_contract"
 version = "0.1.0"
-authors = ["Jilt <jilt@jeeltcraft.com>"]
-edition = "2018"
+authors = ["Your name <Youraddress@mail.com>"]
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
