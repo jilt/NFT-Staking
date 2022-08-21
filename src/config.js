@@ -11,6 +11,7 @@ function getConfig(env) {
         nodeUrl: 'https://rpc.mainnet.near.org',
         contractName: CONTRACT_NAME,
         marketContractName: MARKET_CONTRACT_NAME,
+        GAS: "200000000000000",
         walletUrl: 'https://wallet.near.org',
         helperUrl: 'https://helper.mainnet.near.org'
       };

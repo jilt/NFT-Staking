@@ -11,10 +11,6 @@ impl Contract {
         //we add an optional parameter for perpetual royalties
         perpetual_royalties: Option<HashMap<AccountId, u32>>,
     ) {
-        //ensure that the predecessor has minting access
-        let mint_access = self.allow_list.contains(&env::predecessor_account_id());
-        assert_eq!(mint_access, true, "Account doesn't have access to call mint function...");
-        
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
 

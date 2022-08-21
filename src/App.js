@@ -2,104 +2,265 @@ import React, { useEffect, useState } from "react";
 // React and custom Bootstrap css
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import MintingTool from "./MintingTool";
-import useModal from "./useModal";
-import Modal from "./Modal";
-import nearLogo from "./assets/logo-white.svg";
-// near config
-import getConfig from "./config";
-const { nearConfig } = getConfig(process.env.NODE_ENV || "development");
-import * as nearAPI from "near-api-js";
 
 // React Bootstraps imports
-import { Nav, Navbar, Container, Row, Col, Card, Alert, Button } from "react-bootstrap";
-import Accordion from 'react-bootstrap/Accordion';
+import { Nav, Navbar, Container, Row, Col, Card, Button, Modal, Accordion, Form } from "react-bootstrap";
 
+// Modals
+import useModal from "./useModal";
+import ModalTransfer from "./ModalTransfer";
+import Intro from './Collections';
+
+// Assets
+import Logo from "./assets/logo-white.svg";
+import * as nearAPI from "near-api-js";
 
 const initialValues = {
     assetTitle: "",
+    assetID:"",
     assetDescription: "",
     assetUrl: "",
+    assetCollection:"",
     assetPrice: "",
     assetBid: "",
+    assetLockLink: "",
+    assetPartner:"",
+    assetRoyalty: 0,
+    assetToken:""
 };
 
 const App = ({ currentUser, nearConfig, walletConnection }) => {
-    const {
-        utils: {
-            format: { parseNearAmount },
-        },
-    } = nearAPI;
-    const [showLoader, setShowLoader] = useState(false);
-    const [values, setValues] = useState(initialValues);
-    // state for minting allowance
-    const [userHasNFT, setuserHasNFT] = useState(false);
-    // state to get storage data
-    const [stfetchUrl, setUploads] = useState([])
+  const {
+    utils: {
+      format: { parseNearAmount },
+    },
+  } = nearAPI;
+  const [showLoader, setShowLoader] = useState(false);
+  const [values, setValues] = useState(initialValues);
+
     // state to get storage db
+
     const [straw, setDb] = useState([])
     const [dbUnlock, setdbUnlock] = useState([])
 
+    // state for minting form
+    const [minting, setMinting] = useState(false);
 
-    const {
-        isVisible,
-        isVisibleSale,
-        isVisibleBid,
-        toggleModal,
-        toggleSaleModal,
-        toggleBidModal,
-    } = useModal();
 
-    const [nftResults, setNftResults] = useState([]);
+  const {
+    isVisibleSale,
+    isVisibleBid,
+    toggleSaleModal,
+    toggleBidModal,
+  } = useModal();
 
-    const [nftMarketResults, setNftMarketResults] = useState([]);
-    const [minimum, setMinimum] = useState("");
+  const [nftResults, setNftResults] = useState([]);
+  const [collResult, setCollResult] = useState([]);
+  const [nftMarketResults, setNftMarketResults] = useState([]);
 
-    const signIn = () => {
-        walletConnection.requestSignIn(
-            nearConfig.contractName,
-            "", // title. Optional, by the way
-            "", // successUrl. Optional, by the way
-            "" // failureUrl. Optional, by the way
-        );
-        sendMeta();
-    };
 
-    useEffect(() => {
-        if (!showLoader) {
-            displayAllNFT();
-            loadSaleItems();
-        }
-    }, [showLoader]);
+  const signIn = () => {
+    walletConnection.requestSignIn(
+      nearConfig.contractName,
+      "", // title. Optional, by the way
+      "", // successUrl. Optional, by the way
+      "" // failureUrl. Optional, by the way
+    );
+  };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setValues({
-            ...values,
-            [name]: value,
-        });
-    };
+    // allow access to minting form
 
-    useEffect(() => {
-        const allowList = async () => {
-            const listAllow = ['jilt.testnet', 'khbuilder.testnet', 'helpme.testnet'];
-            {
-                listAllow.filter(allowed => {
-                    if (allowed === window.accountId) {
-                        setuserHasNFT(true)
-                    }
-                    setuserHasNFT(false)
+    const allowList = async () => {
+        const listAllow = ['jilt.testnet', 'khbuilder.testnet', 'helpme.testnet'];
+        {
+            listAllow.filter(allowed => allowed.match(new RegExp(currentUser, "i"))).map(artist => {
+                if (artist == currentUser) {
+                    setMinting(minting => !minting);
                 }
-                )
-            }
-        };
+            })
+        }
+    };
+
+    useEffect(() => {
+
         allowList();
 
         listDbUploads();
 
     }, []);
 
-    //set vault's web3.storage API token
+  useEffect(() => {
+    if (!showLoader) {
+      displayAllNFT();
+      loadSaleItems();
+    }
+  }, [showLoader]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setValues({
+      ...values,
+      [name]: value,
+    });
+  };
+
+  const loadSaleItems = async () => {
+    let nftTokens = await walletConnection
+      .account()
+      .viewFunction(nearConfig.contractName, "nft_tokens", {
+        from_index: "0",
+        limit: 64,
+      });
+      setCollResult(nftTokens);
+
+      let saleTokens = await walletConnection
+          .account()
+          .viewFunction(
+              nearConfig.marketContractName,
+              "get_sales_by_nft_contract_id",
+              {
+                  nft_contract_id: nearConfig.contractName,
+                  from_index: "0",
+                  limit: 64,
+              }
+      );
+      let sales = [];
+
+      for (let i = 0; i < nftTokens.length; i++) {
+          const { token_id } = nftTokens[i];
+          let saleToken = saleTokens.find(({ token_id: t }) => t === token_id);
+          if (saleToken !== undefined) {
+              sales[i] = Object.assign(nftTokens[i], saleToken);
+
+          }
+      }
+      setNftMarketResults(sales);
+
+  };
+
+  const sendStorageDeposit = async () => {
+
+      await walletConnection.account().functionCall({
+          contractId: nearConfig.marketContractName,
+          methodName: "storage_deposit",
+          args: {},
+
+          attachedDeposit: '10000000000000000000000',
+      });
+  };
+
+
+
+    const mintAssetToNft = async () => {
+        handleUnlock()
+        let perpetual = new Object;
+        var b = `${values.assetRoyalty}`;
+        var a = `${values.assetPartner}`;
+        perpetual[a] = b;
+        let perpetual_royalties = Object.entries(perpetual).map(([partner, royalty]) => ({
+            [partner]: royalty * 100
+        })).reduce((acc, cur) => Object.assign(acc, cur), {});
+        if (Object.values(perpetual_royalties).reduce((a, c) => a + c, 0) > 5000) {
+            return alert('Cannot add more than 50% in perpetual NFT royalties when minting');
+        }
+        console.log(perpetual_royalties);
+    let functionCallResult = await walletConnection.account().functionCall({
+      contractId: nearConfig.contractName,
+      methodName: "nft_mint",
+      args: {
+          token_id: `${currentUser}-varda-` + `${values.assetID}`,
+        metadata: {
+          title: `${values.assetTitle}`,
+          description: `${values.assetDescription}`,
+          media: `${values.assetUrl}`,
+          extra: `${values.assetCollection}`,
+        },
+        gas: nearConfig.GAS,
+          receiver_id: currentUser,
+          perpetual_royalties,
+      },
+      attachedDeposit: parseNearAmount("1"),
+    });
+
+        async function handleUnlock(token_id) {
+            var id = `${currentUser}-varda-` + `${values.assetID}`
+            var CID = `${values.assetLock}`
+            var link = `${values.assetLockLink}`
+
+            if (CID && link) {
+                alert('you can add only a CID or a link')
+                return
+            }
+            if (!CID && !link) {
+                alert('please add either a link or a CID to submit')
+                return
+            }
+            let lockable = `{id:'${id}', CID:'${CID}', link:'${link}'}`
+
+            addUnlock(lockable);
+        };
+
+    if (functionCallResult) {
+      console.log("nft created: ");
+    } else {
+      console.log("nft not created");
+    }
+  };
+
+    const checkStorage = async () => {
+        // Check storage balance
+        let storageAccount = await walletConnection.account().functionCall({
+            contractId: nearConfig.marketContractName,
+            methodName: "storage_balance_of",
+            args: {
+                account_id: currentUser,
+            },
+        });
+        console.log(storageAccount);
+     }
+
+    const approveNFTForSale = async (token_id) => {
+        let sale_conditions = {
+            sale_conditions: values.assetPrice,
+        };
+        await walletConnection.account().functionCall({
+            contractId: nearConfig.contractName,
+            methodName: "nft_approve",
+            args: {
+                token_id: token_id,
+                account_id: nearConfig.marketContractName,
+                msg: JSON.stringify(sale_conditions),
+            },
+            attachedDeposit: parseNearAmount("0.01"),
+        });
+    };
+
+  const OfferPrice = async (token_id) => {
+    await walletConnection.account().functionCall({
+      contractId: nearConfig.marketContractName,
+      methodName: "offer",
+      args: {
+        nft_contract_id: nearConfig.contractName,
+        token_id,
+      },
+      attachedDeposit: parseNearAmount(values.assetBid),
+      gas: nearConfig.GAS,
+    })
+  }
+  
+  const displayAllNFT = async () => {
+    let userNFTs = await walletConnection
+      .account()
+      .viewFunction(nearConfig.contractName, "nft_tokens_for_owner", {
+        account_id: currentUser,
+        from_index: "0",
+        limit: 64,
+      });
+    setNftResults(userNFTs);
+    setShowLoader(true);
+  };
+
+  // unlockable content
 
     const relay = 'https://Varda-vault-relay-server.jilt1.repl.co/locked/'
 
@@ -137,395 +298,367 @@ const App = ({ currentUser, nearConfig, walletConnection }) => {
         const stdatastr = JSON.stringify(data)
         const straw = JSON.parse(stdatastr)
         setDb(straw)
-        console.log(straw)
         return straw
 
 
     }
 
-    // get unlockable to owned NFT
+  const signOut = () => {
+    walletConnection.signOut();
+    window.location.replace(window.location.origin + window.location.pathname);
+  };
 
-    function getUnlock() {
-        const dbUnlock = straw
-        setdbUnlock(dbUnlock)
-    }
 
-    const loadSaleItems = async () => {
-        let nftTokens = await walletConnection
-            .account()
-            .viewFunction(nearConfig.contractName, "nft_tokens", {
-                from_index: "0",
-                limit: 64,
-            });
+  return (
+      <React.Fragment>
+          {" "}
+          <Navbar bg='dark' variant='dark'>
+              <Container>
+                  <Navbar.Brand href='#home'>
+                      <img
+                          alt=''
+                          src={Logo}
+                          width='35'
+                          height='35'
+                          className='d-inline-block align-top'
+                      />{" "}
+                      Varda NFT Art
+                  </Navbar.Brand>
+                  <Navbar.Toggle aria-controls='responsive-navbar-nav' />
+                  <Navbar.Collapse id='responsive-navbar-nav'>
+                      <Nav className='me-auto'></Nav>
+                        <Nav>
+                          <Nav.Link
+                              onClick={ currentUser ? signOut : signIn }
+                          >
+                              { currentUser ? currentUser
+                                  : "Login" }
+                          </Nav.Link>{" "}
+                      </Nav>
+                  </Navbar.Collapse>
+              </Container>
+          </Navbar>
+          <Intro user={currentUser} nearConfig={nearConfig} walletConnection={walletConnection} parseNearAmount={parseNearAmount} results={collResult} coll="Wild Pinups" desc="Created by Jilt and Valeriia Derrick, forever Royalties to Ukraine DAO" coll1="Galdrastafir" desc1="TAP to play game, mint your daily protection strategy in symbols, play to earn for Genesis NFT owners." coll2="Elvenland" desc2="NFT to unlock your Elvenland metaverse plot, that comes with built-in DeFi play to earn tools, collab with a great crypto artist." />
+          <Container style={{ marginTop: "3vh" }}>
+              <Accordion defaultActiveKey="0">
+                  {nftMarketResults.length !== 0 ? (
+                      <>
+                          <Accordion.Item eventKey="0">
+                              <Accordion.Header>Market</Accordion.Header>
+                              <Accordion.Body>
+                                  <Row md={3} xs={1} style={{ marginTop: "3vh" }}>
+                                      {nftMarketResults
+                                          ? nftMarketResults.map((nft, index) => (
+                                              <Col className="card-w" key={index}>
+                                                  <ModalTransfer
+                                                      isVisibleBid={isVisibleBid}
+                                                      hideModal={toggleBidModal}
+                                                  >
+                                                      <div className="outform-wrapper">
+                                                          <div className="form-wrapper">
+                                                              <form
+                                                                  onSubmit={(e) => {
+                                                                      e.preventDefault();
+                                                                      OfferPrice(nft.token_id);
+                                                                  }}
+                                                              >
+                                                                  <div className="form-in-wrapper">
+                                                                      <h3 className="text-center pb-1">BUY</h3>
 
-        let saleTokens = await walletConnection
-            .account()
-            .viewFunction(
-                nearConfig.marketContractName,
-                "get_sales_by_nft_contract_id",
-                {
-                    nft_contract_id: nearConfig.contractName,
-                    from_index: "0",
-                    limit: 64,
-                }
-            );
+                                                                      <div className="box-wrapper">
+                                                                          <div className="box-in-wrapper">
+                                                                              <div className="input-wrapper">
+                                                                                  <input
+                                                                                      className="full-width"
+                                                                                      placeholder="Sale price or more"
+                                                                                      name="assetBid"
+                                                                                      type="text"
+                                                                                      value={values.assetBid}
+                                                                                      onChange={handleInputChange}
+                                                                                  />
+                                                                              </div>
+                                                                          </div>
+                                                                      </div>
+                                                                      <div className="form-btn-wrapper">
+                                                                          <Button variant="outline-primary" onClick={(e) => {
+                                                                              e.preventDefault();
+                                                                              OfferPrice(nft.token_id);
+                                                                          }}>Buy</Button>
+                                                                      </div>
+                                                                  </div>
+                                                              </form>
+                                                          </div>
+                                                      </div>
+                                                  </ModalTransfer>
+                                                  <Card className="card inset">
+                                                      <a className="asset-anchor" href="#">
+                                                          <Card.Img variant="top" src={nft.metadata.media} />
+                                                      </a>
+                                                      <Card.Body className="d-grid gap-2">
+                                                          <Card.Title>{nft.metadata.title}</Card.Title>
+                                                          <Card.Text><b>{nft.metadata.extra}</b><br />Owner: {nft.owner_id}<br />
+                                                              Royalties: <br />
+                                                              {
+                                                                  Object.keys(nft.royalty).length > 0 ?
+                                                                      Object.entries(nft.royalty).map(([receiver, amount]) => <div key={receiver}>
+                                                                          {receiver} - {amount / 100}%
+                                                                      </div>)
+                                                                      :
+                                                                      <p>This token has no royalties.</p>
+                                                              }
+                                                          </Card.Text>
+                                                          <span className="span-price">Price</span>
+                                                          <div className="price-wrapper">
+                                                              <div className="price">
+                                                                  {nft.sale_conditions} - NEAR
+                                                              </div>
+                                                          </div>
+                                                          <div className="sell-wrapper">
+                                                              {currentUser !== nft.owner_id ? (
+                                                                  <Button variant="outline-primary" onClick={toggleBidModal}>
+                                                                      Buy
+                                                                  </Button>
+                                                              ) : null}
+                                                          </div>
+                                                      </Card.Body>
+                                                  </Card>
+                                              </Col>
+                                          ))
+                                          : "Market NFTs not found"}
+                                  </Row>
+                              </Accordion.Body>
+                          </Accordion.Item>
+                      </>) : null}
+                  { nftResults.length !== 0 ? (
+                      <>
+                          <Accordion.Item eventKey="1">
+                              <Accordion.Header>Your NFTs</Accordion.Header>
+                              <Accordion.Body>
+                                  <Row md={3} xs={1} style={{ marginTop: "3vh" }}>
+                                      {nftResults
+                                          ? nftResults.map((nft, index) => (
+                                              <Col className="card-w" key={index}>
+                                                  <ModalTransfer
+                                                      isVisibleSale={isVisibleSale}
+                                                      hideModal={toggleSaleModal}
+                                                  >
+                                                      <div className="outform-wrapper">
+                                                          <div className="form-wrapper">
+                                                              <form
+                                                                  onSubmit={(e) => {
+                                                                      e.preventDefault();
+                                                                      approveNFTForSale(nft.token_id);
+                                                                  }}
+                                                              >
+                                                                  <div className="form-in-wrapper">
+                                                                      <h3 className="text-center pb-1">SELL NFT</h3>
+                                                                      <Button variant="outline-primary" onClick={() => sendStorageDeposit()} >Deposit Storage</Button>
+                                                                      <br />
+                                                                      <div className="box-wrapper">
+                                                                          <div className="box-in-wrapper">
+                                                                              <div className="input-wrapper">
+                                                                                  <Form.Check
+                                                                                      type="switch"
+                                                                                      disabled
+                                                                                      id="stNEAR"
+                                                                                      label="Use Liquid Staking Tokens"
+                                                                                      name="assetToken"
+                                                                                      value={values.assetToken}
+                                                                                      onChange={handleInputChange}
+                                                                                  />
+                                                                              </div>
+                                                                          </div>
+                                                                      </div>
+                                                                      <div className="box-wrapper">
+                                                                          <div className="box-in-wrapper">
+                                                                              <div className="input-wrapper">
+                                                                                  <input
+                                                                                      className="full-width"
+                                                                                      placeholder="Add sale price"
+                                                                                      name="assetPrice"
+                                                                                      type="text"
+                                                                                      value={values.assetPrice}
+                                                                                      onChange={handleInputChange}
+                                                                                  />
+                                                                              </div>
+                                                                          </div>
+                                                                      </div>
+                                                                      <div className="form-btn-wrapper">
+                                                                          <Button variant="outline-primary" onClick={(e) => {
+                                                                              e.preventDefault();
+                                                                              approveNFTForSale(nft.token_id);
+                                                                          }} >Sell now</Button>
+                                                                      </div>
+                                                                  </div>
+                                                              </form>
+                                                          </div>
+                                                      </div>
+                                                  </ModalTransfer>
+                                                  <Card className="card inset">
+                                                      <a className="asset-anchor" href="#">
+                                                          <Card.Img variant="top" src={nft.metadata.media} />
+                                                      </a>
+                                                      <Card.Body className="d-grid gap-2">
+                                                          <Card.Title>{nft.metadata.title}</Card.Title>
+                                                          { straw.filter(lock => lock.id.match(new RegExp(nft.token_id, "i"))).length == 0 ?
+                                                              <p>No Unlockable</p>
+                                                              : straw.filter(lock => lock.id.match(new RegExp(nft.token_id, "i"))).map(lockable =>
+                                                                  <Button variant="outline-primary" key={ nft.token_id }>
+                                                                      { lockable.CID.length > 0 ? <a href={`https://${lockable.CID}.ipfs.dweb.link`} target="_blank" title="your locked content" alt="your locked content">Get unlockable</a>
+                                                                          : <a href={lockable.link} target="_blank" title="your locked content" alt="your locked content">Get unlockable</a> }
+                                                                  </Button>
+                                                                          )
+                                                                  }
+                                                          <Card.Text><b>{nft.metadata.extra}</b><br />{nft.metadata.description}<br />
+                                                              Royalties<br />
+                                                              {
+                                                                  Object.keys(nft.royalty).length > 0 ?
+                                                                      Object.entries(nft.royalty).map(([receiver, amount]) => <div key={receiver}>
+                                                                          {receiver} - {amount / 100}%
+                                                                      </div>)
+                                                                      :
+                                                                      <p>This token has no royalties.</p>
+                                                              }
+                                                          </Card.Text>
+                                                          {
+                                                              nft.approved_account_ids[nearConfig.marketContractName] >= 0 ? Object.entries(nft.approved_account_ids).map(([contract, id]) => <div key={id}><p><small>On sale on: {contract}</small></p></div>) : <Button variant="outline-primary" onClick={toggleSaleModal}>
+                                                                  Sell now
+                                                              </Button>
+                                                          }
 
-        let sales = [];
 
-        for (let i = 0; i < nftTokens.length; i++) {
-            const { token_id } = nftTokens[i];
-            let saleToken = saleTokens.find(({ token_id: t }) => t === token_id);
-            if (saleToken !== undefined) {
-                sales[i] = Object.assign(nftTokens[i], saleToken);
+                                                      </Card.Body>
 
-            }
-        }
-        setNftMarketResults(sales);
-    };
-    const getMinimumStorage = async () => {
-        let minimum_balance = await walletConnection
-            .account()
-            .viewFunction(nearConfig.marketContractName, "storage_minimum_balance");
-        setMinimum(minimum_balance);
-
-    };
-
-    const sendStorageDeposit = async () => {
-        getMinimumStorage();
-        await walletConnection.account().functionCall({
-            contractId: nearConfig.marketContractName,
-            methodName: "storage_deposit",
-            args: {},
-
-            attachedDeposit: minimum,
-        });
-    };
-
-    const sendMeta = async () => {
-        let functionCallResult = await walletConnection.account().functionCall({
-            contractId: nearConfig.contractName,
-            methodName: "new_default_meta",
-            args: {
-                owner_id: nearConfig.contractName,
-            },
-            attachedDeposit: 0,
-            walletMeta: "",
-            wallerCallbackUrl: "",
-        });
-
-        if (functionCallResult) {
-            console.log("new meta data created: ");
-        } else {
-            console.log("meta data not created");
-        }
-    };
-
-    const mintAssetToNft = async () => {
-        toggleModal();
-        let functionCallResult = await walletConnection.account().functionCall({
-            contractId: nearConfig.contractName,
-            methodName: "nft_mint",
-            args: {
-                token_id: `${values.assetTitle}`,
-                metadata: {
-                    title: `${values.assetTitle}`,
-                    description: `${values.assetDescription}`,
-                    media: `${values.assetUrl}`,
-                },
-                gas: nearConfig.GAS,
-                receiver_id: currentUser,
-            },
-            attachedDeposit: parseNearAmount("1"),
-        });
-
-        if (functionCallResult) {
-            console.log("nft created: ");
-        } else {
-            console.log("nft not created");
-        }
-    };
-
-    const approveNFTForSale = async (token_id) => {
-        sendStorageDeposit();
-        let sale_conditions = {
-            sale_conditions: values.assetPrice,
-        };
-        await walletConnection.account().functionCall({
-            contractId: nearConfig.contractName,
-            methodName: "nft_approve",
-            args: {
-                token_id: token_id,
-                account_id: nearConfig.marketContractName,
-                msg: JSON.stringify(sale_conditions),
-            },
-            attachedDeposit: parseNearAmount("0.01"),
-        });
-    };
-
-    const OfferPrice = async (token_id) => {
-        await walletConnection.account().functionCall({
-            contractId: nearConfig.marketContractName,
-            methodName: "offer",
-            args: {
-                nft_contract_id: nearConfig.marketContractName,
-                token_id,
-            },
-            attachedDeposit: parseNearAmount(values.assetBid),
-            gas: nearConfig.GAS,
-        })
-    }
-
-    const displayAllNFT = async () => {
-        let userNFTs = await walletConnection
-            .account()
-            .viewFunction(nearConfig.contractName, "nft_tokens_for_owner", {
-                account_id: currentUser,
-                from_index: "0",
-                limit: 64,
-            });
-        setNftResults(userNFTs);
-        setShowLoader(true);
-    };
-
-    const signOut = () => {
-        walletConnection.signOut();
-        window.location.replace(window.location.origin + window.location.pathname);
-    };
-
-    return (
-        <div>
-            <header className="top-header">
-                <div className="menu">
-                    <div className="navbar-left">
-                        <h3> NFT MARKET</h3>
-                    </div>
-                    <nav className="navbar">
-                        <ul className="navbar-ul">
-                            <li className="navbar-li pt-3 pr-2">
-                                {currentUser ? (
-                                    <button href="#" className="log-link" onClick={signOut}>
-                                        Log out
-                                    </button>
-                                ) : (
-                                    <button href="#" className="log-link" onClick={signIn}>
-                                        Log In
-                                    </button>
-                                )}
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </header>
-            <main className="main-wrapper">
-                <div className="wrapper">
-                    <MintingTool userNFTStatus={userHasNFT} user={currentUser} db={straw} onAdd={addUnlock} />
-                </div>
-            </main>
-
-            <div className="gallery-wrapper">
-                {nftResults
-                    ? nftResults.map((nft, index) => (
-                        <div className="outter-wrapper" key={index}>
-                            <Modal
-                                isVisibleSale={isVisibleSale}
-                                hideModal={toggleSaleModal}
-                            >
-                                <div className="outform-wrapper">
-                                    <div className="form-wrapper">
-                                        <form
-                                            onSubmit={(e) => {
-                                                e.preventDefault();
-                                                approveNFTForSale(nft.metadata.title);
-                                            }}
-                                        >
-                                            <div className="form-in-wrapper">
-                                                <h3 className="text-center pb-1">SELL NFT</h3>
-
-                                                <div className="box-wrapper">
-                                                    <div className="box-in-wrapper">
-                                                        <div className="input-wrapper">
-                                                            <input
-                                                                className="input-box"
-                                                                placeholder="Add sale price"
-                                                                name="assetPrice"
-                                                                type="text"
-                                                                value={values.assetPrice}
-                                                                onChange={handleInputChange}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="form-btn-wrapper">
-                                                    <button className="form-btn">Sell now</button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </Modal>
-                            <article className="card-wrapper">
-                                <a className="asset-anchor" href="#">
-                                    <div className="asset-anchor-wrapper">
-                                        <div className="asset-anchor-wrapper-inner">
-                                            <div className="asset-anchor-wrapper-inner-2">
-                                                <img
-                                                    src={nft.metadata.media}
-                                                    className="img-wrapper"
-                                                    alt="NFT Token"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="details-wrapper">
-                                        <div className="details-title-wrapper">
-                                            <div className="details-title-left-wrapper">
-                                                <div className="details-title-left-wrapper-inner-1">
-                                                    {nft.metadata.title}
-                                                </div>
-                                                <div className="details-title-left-wrapper-inner-2">
-                                                    {nft.owner_id}
-                                                </div>
-                                            </div>
-                                            <div className="details-title-right-wrapper">
-                                                <div className="details-assets-right-wrapper-inner-1">
-                                                    <span className="span-price">Price</span>
-                                                    <div className="price-wrapper">
-                                                        <div className="near-symbol">
-                                                            <img
-                                                                className="near-logo"
-                                                                src={nearLogo}
-                                                                alt="near logo"
-                                                            />
-                                                        </div>
-                                                        <div className="price">-</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="sell-wrapper">
-                                        <button className="form-btn" onClick={toggleSaleModal}>
-                                            Sell now
-                                        </button>
-                                    </div>
-                                </a>
-                            </article>
-                        </div>
-                    ))
-                    : "NFTs not found"}
-            </div>
-
-            <div className="market-wrapper">
-                <div className="market-inner-wrapper">
-                    {nftMarketResults.length !== 0 ? (
-                        <div className="market-header">
-                            <h3>Market Place</h3>
-                        </div>
-                    ) : null}
-
-                    <div className="market-result-wrapper">
-                        {nftMarketResults
-                            ? nftMarketResults.map((nft, index) => (
-                                <div className="outter-wrapper" key={index}>
-                                    <Modal
-                                        isVisibleBid={isVisibleBid}
-                                        hideModal={toggleBidModal}
-                                    >
-                                        <div className="outform-wrapper">
-                                            <div className="form-wrapper">
-                                                <form
-                                                    onSubmit={(e) => {
-                                                        e.preventDefault();
-                                                        OfferPrice(nft.token_id);
-                                                    }}
-                                                >
-                                                    <div className="form-in-wrapper">
-                                                        <h3 className="text-center pb-1">BID</h3>
-
-                                                        <div className="box-wrapper">
-                                                            <div className="box-in-wrapper">
-                                                                <div className="input-wrapper">
-                                                                    <input
-                                                                        className="input-box"
-                                                                        placeholder="Add bid price"
-                                                                        name="assetBid"
-                                                                        type="text"
-                                                                        value={values.assetBid}
-                                                                        onChange={handleInputChange}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="form-btn-wrapper">
-                                                            <button className="form-btn">Enter Bid</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </Modal>
-                                    <article className="card-wrapper">
-                                        <a className="asset-anchor" href="#">
-                                            <div className="asset-anchor-wrapper">
-                                                <div className="asset-anchor-wrapper-inner">
-                                                    <div className="asset-anchor-wrapper-inner-2">
-                                                        <img
-                                                            src={nft.metadata.media}
-                                                            className="img-wrapper"
-                                                            alt="NFT Token"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="details-wrapper">
-                                                <div className="details-title-wrapper">
-                                                    <div className="details-title-left-wrapper">
-                                                        <div className="details-title-left-wrapper-inner-1">
-                                                            {nft.token_id}
-                                                        </div>
-                                                        <div className="details-title-left-wrapper-inner-2">
-                                                            {nft.owner_id}
-                                                        </div>
-                                                    </div>
-                                                    <div className="details-title-right-wrapper">
-                                                        <div className="details-assets-right-wrapper-inner-1">
-                                                            <span className="span-price">Price</span>
-                                                            <div className="price-wrapper">
-                                                                <div className="near-symbol">
-                                                                    <img
-                                                                        className="near-logo"
-                                                                        src={nearLogo}
-                                                                        alt="near logo"
-                                                                    />
-                                                                </div>
-                                                                <div className="price">
-                                                                    {nft.sale_conditions}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-
-                                        <div className="sell-wrapper">
-                                            {currentUser !== nft.owner_id ? (
-                                                <button className="form-btn" onClick={toggleBidModal}>
-                                                    Bid
-                                                </button>
-                                            ) : null}
-                                        </div>
-                                    </article>
-                                </div>
-                            ))
-                            : "Market NFTs not found"}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+                                                  </Card>
+                                              </Col>
+                                          ))
+                                          : "NFTs not found"}
+                                  </Row>
+                              </Accordion.Body>
+                          </Accordion.Item>
+                      </>) : null }
+                  <Accordion.Item eventKey="2">
+                      <Accordion.Header>Mint</Accordion.Header>
+                      <Accordion.Body>
+                          <Row>
+                              <Col md={{ span: 8, offset: 2 }}>
+                                  { minting ? <form
+                                      onSubmit={(e) => {
+                                          e.preventDefault();
+                                          mintAssetToNft();
+                                      }}
+                                  >
+                                      <Row>
+                                          <h3 className="text-center pb-1">MINT NFT</h3>
+                                          <input
+                                              style={{ margin: "1vh" }}
+                                              className="full-width"
+                                              placeholder="Title"
+                                              name="assetTitle"
+                                              type="text"
+                                              value={values.assetTitle}
+                                              onChange={handleInputChange}
+                                          />
+                                          <input
+                                              style={{ margin: "1vh" }}
+                                              className="full-width"
+                                              placeholder="Unique ID (no spaces)"
+                                              name="assetID"
+                                              type="text"
+                                              value={values.assetID}
+                                              onChange={handleInputChange}
+                                          />
+                                          <input
+                                              style={{ margin: "1vh" }}
+                                              className="full-width"
+                                              placeholder="Description"
+                                              name="assetDescription"
+                                              type="text"
+                                              value={values.assetDescription}
+                                              onChange={handleInputChange}
+                                          />
+                                          <input
+                                              style={{ margin: "1vh" }}
+                                              className="full-width"
+                                              placeholder="Collection Name"
+                                              name="assetCollection"
+                                              type="text"
+                                              value={values.assetCollection}
+                                              onChange={handleInputChange}
+                                          />
+                                          <input
+                                              style={{ margin: "1vh" }}
+                                              className="full-width"
+                                              placeholder="Image Url"
+                                              name="assetUrl"
+                                              type="text"
+                                              value={values.assetUrl}
+                                              onChange={handleInputChange}
+                                          />
+                                          <h3 className="text-center pb-1">Unlockable Content</h3>
+                                          <input
+                                              style={{ margin: "1vh" }}
+                                              className="full-width"
+                                              placeholder="Unlockable Link"
+                                              name="assetLockLink"
+                                              type="text"
+                                              value={values.assetLockLink}
+                                              onChange={handleInputChange}
+                                          />
+                                          <h3 className="text-center pb-1">Royalties</h3>
+                                          <input
+                                              style={{ margin: "1vh" }}
+                                              className="full-width"
+                                              placeholder="ex: one.near, two.near"
+                                              name="assetPartner"
+                                              type="text"
+                                              value={values.assetPartner}
+                                              onChange={handleInputChange}
+                                          />
+                                          <input
+                                              style={{ margin: "1vh" }}
+                                              className="full-width"
+                                              placeholder="Percentage"
+                                              name="assetRoyalty"
+                                              type="number"
+                                              value={values.assetRoyalty}
+                                              onChange={handleInputChange}
+                                          />
+                                          <div className="form-btn-wrapper">
+                                              <Button variant="outline-primary" onClick={(e) => { e.preventDefault(); mintAssetToNft() }}>Mint NFT</Button>
+                                          </div>
+                                      </Row>
+                                  </form> : <p>To mint with Varda submit your Art <Button variant="outline-primary"><a href="https://lauracamellini.typeform.com/to/EuDLb43R" target="_blank" title="Artist Application">Here</a></Button></p> }
+                                  
+                              </Col>
+                          </Row>
+                      </Accordion.Body>
+                  </Accordion.Item>
+              </Accordion>
+              <Row className="footer">
+                  <Navbar fixed="bottom" bg="dark" variant="dark" >
+                      <Container>
+                          <Navbar.Brand href="#">
+                              <img
+                                  alt=''
+                                  src={Logo}
+                                  width='85'
+                                  height='85'
+                                  className='d-inline-block align-top'
+                              />{" "}
+                          </Navbar.Brand>
+                          <Nav className="me-auto">
+                              <Nav.Link href="#" target="_blank" title="Main Project">Project</Nav.Link>
+                              <Nav.Link href="#" target="_blank" title="Play to Earn">Game</Nav.Link>
+                              <Nav.Link href="#" target="_blank" title="Instagram">Instagram</Nav.Link>
+                              <Nav.Link href="#" target="_blank" title="Discord">Discord</Nav.Link>
+                          </Nav>
+                      </Container>
+                  </Navbar>
+              </Row>
+          </Container>
+      </React.Fragment>
+  );
 };
 
 export default App;

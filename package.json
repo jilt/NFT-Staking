@@ -1,8 +1,7 @@
 {
-  "name": "varda-nft-marketplace",
+  "name": "Varda-nft-marketplace",
   "version": "1.0.0",
-  "description": "Smart contract and UI for the main Varda Marketplace",
-  "license": "MIT",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "parcel src/index.html",
@@ -11,32 +10,21 @@
     "eject": "react-scripts eject"
   },
   "keywords": [],
-  "author": "jilt",
+  "author": "jilt@jeeltcraft.com",
+  "license": "MIT",
   "devDependencies": {
     "parcel-bundler": "^1.12.5"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.5",
-    "bn.js": "^5.2.1",
     "bootstrap": "^5.2.0",
     "near-api-js": "^0.44.2",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.0",
     "react-dom": "^17.0.2",
     "react-scripts": "^5.0.0",
+    "regenerator-runtime": "^0.13.9",
     "use-file-picker": "^1.5.0",
     "web3.storage": "^4.3.0"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }
