@@ -1,92 +1,119 @@
 import React, { useState } from "react";
-import Modal from 'react-bootstrap/Modal';
-import { Form, Button } from "react-bootstrap";
-import { default as PublicKey, transactions, utils } from "near-api-js"
-import getConfig from '../config'
-const nearConfig = getConfig(process.env.NODE_ENV || 'development')
+import { Modal, Button, Container, Row, Form } from "react-bootstrap";
 
+const initialValues = {
+    assetPrice: "",
+    assetToken: ""
+};
 
 function ModalSale(props) {
-    const [saleVisible, setSaleVisible] = useState(false);
-    const [currentToken, setCurrentToken] = useState(null);
-    const [price, setPrice] = useState('');
-    const [token, setToken] = useState("NEAR");
-    const [saleConditions, setSaleConditions] = useState({});
-    const [minimum, setMinimum] = useState('');
 
+    const [values, setValues] = useState(initialValues);
 
-    function handleSaleToken(token) {
-        setCurrentToken(props.nft.token_id);
+    // state for modals
 
-        setSaleVisible(true);
-    }
+    const [sellVisible, setSellVisible] = useState(false);
 
-
-    async function handlePriceChange(e) {
-        e.preventDefault();
-        let newSaleConditions = (e.target.value);
-        setPrice(newSaleConditions);
-        console.log(price);
-        let sale_conditions = { sale_conditions: newSaleConditions };
-        setSaleConditions(sale_conditions);
-    }
-
-    async function submitOnSale(token, newSaleConditions) {
-        sendStorageDeposit();
-        let sale_conditions = {
-            sale_conditions: utils.format.parseNearAmount(price),
-        };
-        await walletConnection.account().functionCall({
-            contractId: nearConfig.contractName,
-            methodName: "nft_approve",
-            args: {
-                token_id: currentToken.token_id,
-                account_id: nearConfig.marketContractName,
-                msg: JSON.stringify(sale_conditions),
-            },
-            attachedDeposit: parseNearAmount("0.01"),
-        });
-         // setSaleVisible(false);
-    };
+    const sellClose = () => setSellVisible(false);
+    const sellShow = () => setSellVisible(true);
 
     const sendStorageDeposit = async () => {
-        getMinimumStorage();
-        await walletConnection.account().functionCall({
-            contractId: window.contractMarket,
+
+        await props.walletConnection.account().functionCall({
+            contractId: props.nearConfig.marketContractName,
             methodName: "storage_deposit",
             args: {},
-            attachedDeposit: minimum,
-        })
-    }
 
-    const getMinimumStorage = async () => {
-        let minimum_balance = await walletConnection
-            .account()
-            .viewFunction(nearConfig.marketContractName, "storage_minimum_balance")
-        setMinimum(minimum_balance);
-    }
+            attachedDeposit: '10000000000000000000000',
+        });
+    };
+
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setValues({
+            ...values,
+            [name]: value,
+        });
+    };
+
+    const approveNFTForSale = async (token_id) => {
+        let sale_conditions = {
+            sale_conditions: values.assetPrice,
+            f_token: near,
+        };
+        await props.walletConnection.account().functionCall({
+            contractId: props.nearConfig.contractName,
+            methodName: "nft_approve",
+            args: {
+                token_id: props.token_id,
+                account_id: props.nearConfig.marketContractName,
+                msg: JSON.stringify(sale_conditions),
+            },
+            attachedDeposit: props.parseNearAmount("0.01"),
+        });
+    };
+
 
     return (
-
-        <>
-            <Button variant="outline-primary" onClick={() => handleSaleToken(props.nft.token_id)} style={{ marginTop: "1vh" }}>
-                Sell
-            </Button>
-            <Modal title="Sell NFT" show={saleVisible} onHide={() => setSaleVisible(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title id="sale-modal">
-                        Sell this NFT
-                    </Modal.Title>
-                </Modal.Header>
+        <><Button variant="outline-primary" onClick={sellShow} >Sell</Button>
+            <Modal show={sellVisible} size="lg" onHide={sellClose}>
+                <Modal.Header closeButton>Sell</ Modal.Header>
                 <Modal.Body>
-                    <Form style={{ marginBottom: 30 }} >
-                        <input className="full-width" type="text" placeholder={"add sale price"} onChange={handlePriceChange} size="large" /><br />
-                        <Button variant="outline-primary" style={{ marginTop: "3vh" }} onClick={submitOnSale}>Sell this NFT</Button>
-                    </Form>
+                    <Container>
+                        <Row>
+                            <form>
+                                <div className="form-in-wrapper">
+                                    <Button variant="outline-primary" onClick={() => sendStorageDeposit()} >Deposit Storage</Button>
+                                    <br />
+                                    <div className="box-wrapper">
+                                        <div className="box-in-wrapper">
+                                            <div className="input-wrapper">
+                                                <Form.Check
+                                                    type="switch"
+                                                    disabled
+                                                    id="stNEAR"
+                                                    label="Use Liquid Staking Tokens"
+                                                    name="assetToken"
+                                                    value={values.assetToken}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="box-wrapper">
+                                        <div className="box-in-wrapper">
+                                            <div className="input-wrapper">
+                                                <input
+                                                    className="full-width"
+                                                    placeholder="Add sale price"
+                                                    name="assetPrice"
+                                                    type="text"
+                                                    value={values.assetPrice}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="form-btn-wrapper">
+                                        <Button variant="outline-primary" onClick={(e) => {
+                                            e.preventDefault();
+                                            approveNFTForSale(props.token_id);
+                                        }} >Sell now</Button>
+                                    </div>
+                                </div>
+                            </form>
+                        </Row>
+                    </Container>
                 </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-primary" onClick={sellClose}>
+                        Close 
+                    </Button>
+                </Modal.Footer>
             </Modal>
         </>
-    )
+        );
 }
 
-export default ModalSale
+export default ModalSale;

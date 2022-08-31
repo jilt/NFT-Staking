@@ -1,14 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\market-contract",
-    "\\market-contract\\src",
-    "\\nft-contract",
-    "\\nft-contract\\src",
+    "\\market_contract",
     "\\src",
-    "\\src\\Components",
-    "\\src\\Components\\Modals"
+    "\\src\\Modals"
   ],
-  "SelectedNode": "\\src\\Components\\MarketPlace.js",
+  "SelectedNode": "\\src\\App.js",
   "PreviewInSolutionExplorer": false
 }
