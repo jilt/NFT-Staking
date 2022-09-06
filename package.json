@@ -20,6 +20,7 @@
     "parcel-bundler": "^1.12.5"
   },
   "dependencies": {
+	"parcel-bundler": "^1.12.5",
     "@popperjs/core": "^2.11.5",
     "bootstrap": "^5.2.0",
     "near-api-js": "^0.44.2",
