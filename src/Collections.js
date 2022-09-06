@@ -137,7 +137,7 @@ function Intro(props) {
     // allow access to minting form
 
     const allowList = async () => {
-        const listAllow = ['jilt.testnet', 'khbuilder.testnet', 'helpme.testnet'];
+        const listAllow = ['jilt.testnet', 'jilt.near', 'nft-varda.near'];
         {
             listAllow.filter(allowed => allowed.match(new RegExp(props.user, "i"))).map(artist => {
                 if (artist == props.user) {
@@ -280,7 +280,7 @@ function Intro(props) {
 
     // unlockable content
 
-    const relay = 'https://Varda-vault-relay-server.jilt1.repl.co/locked/'
+    const relay = process.env.VAULT_RELAY
 
 
     // add unlockable
@@ -329,7 +329,7 @@ function Intro(props) {
                 <img
                     fluid
                     className="d-block w-100"
-                    src="https://raw.githubusercontent.com/jilt/NFT-Staking/main/docs/images/slider-5.jpg"
+                    src="https://raw.githubusercontent.com/jilt/NFT-Staking/main/docs/images/slider-9.jpg"
                     alt="Wild-Pinups"
                 />
                 <Carousel.Caption>
