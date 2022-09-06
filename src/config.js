@@ -1,5 +1,5 @@
-const CONTRACT_NAME = process.env.CONTRACT_NAME || 'nft.varda.testnet';
-const MARKET_CONTRACT_NAME = process.env.MARKET_CONTRACT_NAME || 'market.varda.testnet';
+const CONTRACT_NAME = process.env.CONTRACT_NAME || 'nft-varda.near';
+const MARKET_CONTRACT_NAME = process.env.MARKET_CONTRACT_NAME || 'market-varda.near';
 
 
 function getConfig(env) {
