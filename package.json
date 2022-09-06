@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npx parcel src/index.html",
-    "build": "react-scripts build",
+    "build": "npx parcel build src/index.html",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
