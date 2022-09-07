@@ -19,7 +19,7 @@ import * as nearAPI from "near-api-js";
 import getConfig from './config'
 const nearConfig = getConfig("mainnet");
 
-const App = ({ currentUser, nearConfig, walletConnection }) => {
+const App = ({ currentUser, walletConnection }) => {
   const {
     utils: {
       format: { parseNearAmount },
