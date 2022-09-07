@@ -1,4 +1,4 @@
-const CONTRACT_NAME = process.env.CONTRACT_NAME || 'nft-varda.near';
+const CONTRACT_NAME = process.env.CONTRACT_NAME || 'mint-varda.near';
 const MARKET_CONTRACT_NAME = process.env.MARKET_CONTRACT_NAME || 'market-varda.near';
 
 
