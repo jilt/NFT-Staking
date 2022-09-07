@@ -14,10 +14,11 @@ import ArtDetails from './ArtDetails';
 
 // Assets
 import Logo from "./assets/logo-white.svg";
-import * as nearAPI from "near-api-js";
+
 
 import getConfig from './config'
 const nearConfig = getConfig("mainnet");
+import * as nearAPI from "near-api-js";
 
 const App = ({ currentUser, walletConnection }) => {
   const {
