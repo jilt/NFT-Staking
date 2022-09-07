@@ -40,7 +40,6 @@ function ModalSale(props) {
     const approveNFTForSale = async (token_id) => {
         let sale_conditions = {
             sale_conditions: values.assetPrice,
-            f_token: near,
         };
         await props.walletConnection.account().functionCall({
             contractId: props.nearConfig.contractName,
