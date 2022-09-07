@@ -8,6 +8,12 @@ import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import ModalSale from "./Modals/ModalSale";
 import ModalBuy from "./Modals/ModalBuy";
 
+// near config
+
+import getConfig from './config'
+const { networkId } = getConfig(process.env.NODE_ENV || 'development')
+
+
 function Intro(props) {
 
     const initialValues = {
@@ -137,7 +143,7 @@ function Intro(props) {
     // allow access to minting form
 
     const allowList = async () => {
-        const listAllow = ['jilt.testnet', 'jilt.near', 'nft-varda.near'];
+        const listAllow = ['jilt.near', 'jeeltcraft.near', 'nft-varda.near'];
         {
             listAllow.filter(allowed => allowed.match(new RegExp(props.user, "i"))).map(artist => {
                 if (artist == props.user) {
@@ -280,7 +286,7 @@ function Intro(props) {
 
     // unlockable content
 
-    const relay = process.env.VAULT_RELAY
+    const relay = 'https://Varda-vault-relay-server.jilt1.repl.co/locked/'
 
 
     // add unlockable

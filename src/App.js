@@ -16,6 +16,8 @@ import ArtDetails from './ArtDetails';
 import Logo from "./assets/logo-white.svg";
 import * as nearAPI from "near-api-js";
 
+import getConfig from './config'
+const { networkId } = getConfig(process.env.NODE_ENV || 'development')
 
 const App = ({ currentUser, nearConfig, walletConnection }) => {
   const {
