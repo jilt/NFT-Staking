@@ -63,6 +63,7 @@ function ModalSale(props) {
                         <Row>
                             <form>
                                 <div className="form-in-wrapper">
+                                    <p><small>Please pay storage before putting your NFT on sale</small></p>
                                     <Button variant="outline-primary" onClick={() => sendStorageDeposit()} >Deposit Storage</Button>
                                     <br />
                                     <div className="box-wrapper">
