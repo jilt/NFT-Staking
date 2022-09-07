@@ -495,7 +495,7 @@ function Intro(props) {
                                                                 }
                                                             </Card.Text>
                                                             {
-                                                                nft.approved_account_ids[props.nearConfig.marketContractName] >= 0 ? Object.entries(nft.approved_account_ids).map(([contract, id]) => <div key={id}><p><small>On sale on: {contract}</small></p></div>) : <ModalSale index={index} token_id={nft.token_id} user={props.user} nearConfig={props.nearConfig} walletConnection={props.walletConnection} parseNearAmount={props.parseNearAmount} />
+                                                                nft.approved_account_ids[props.nearConfig.marketContractName] >= 0 ? Object.entries(nft.approved_account_ids).map(([contract, id]) => <div key={id}><p><small>On sale on: {contract}</small></p><p>Upgrade price here</p><ModalSale index={index} token_id={nft.token_id} user={props.user} nearConfig={props.nearConfig} walletConnection={props.walletConnection} parseNearAmount={props.parseNearAmount} /></div>) : <ModalSale index={index} token_id={nft.token_id} user={props.user} nearConfig={props.nearConfig} walletConnection={props.walletConnection} parseNearAmount={props.parseNearAmount} />
                                                             }
                                                         </Card.Body>
 
