@@ -675,5 +675,7 @@ a:hover {
 
     }
 
-    
+    .last-card {
+        margin-top: 2em;
+    }
 }
