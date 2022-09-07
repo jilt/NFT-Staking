@@ -8,10 +8,6 @@ import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import ModalSale from "./Modals/ModalSale";
 import ModalBuy from "./Modals/ModalBuy";
 
-// near config
-
-import getConfig from './config'
-const { networkId } = getConfig(process.env.NODE_ENV || 'development')
 
 
 function Intro(props) {
