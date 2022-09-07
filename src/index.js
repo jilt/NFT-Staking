@@ -6,7 +6,7 @@ import * as nearAPI from 'near-api-js'
 import 'regenerator-runtime'
 
 async function initContract() {
-  const nearConfig = getConfig(process.env.NEAR_ENV || 'testnet');
+  const nearConfig = getConfig(process.env.NEAR_ENV || 'mainnet');
   const keyStore = new nearAPI.keyStores.BrowserLocalStorageKeyStore()
   const near =  await nearAPI.connect({keyStore, ...nearConfig})
   const walletConnection = new nearAPI.WalletConnection(near)
