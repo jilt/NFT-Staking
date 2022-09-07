@@ -29,12 +29,13 @@ const App = ({ currentUser, walletConnection }) => {
 
 
   const signIn = () => {
-    walletConnection.requestSignIn(
-      nearConfig.contractName,
+      walletConnection.requestSignIn(
+          nearConfig.contractName,
       "", // title. Optional, by the way
       "", // successUrl. Optional, by the way
       "" // failureUrl. Optional, by the way
-    );
+      );
+      console.log(nearConfig);
   };
 
   const signOut = () => {

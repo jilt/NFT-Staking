@@ -337,7 +337,6 @@ function Intro(props) {
                 <Carousel.Caption>
                         <Button variant="outline-light" onClick={handleShow}>Wild Pinups</Button>
                     <br />
-                    <p>Created by Jilt and Valeriia Derrick, forever Royalties to Ukraine DAO</p>
                 </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item interval={7000}>
@@ -379,8 +378,8 @@ function Intro(props) {
                 </Carousel.Caption>
             </Carousel.Item>
         </Carousel>
-            <Container style={{ marginTop: "3vh" }}>
-                <Row className="bg-dark text-white">
+            <Container style={{ marginTop: "3vh" }} fluid="md">
+                <Row>
                 <Col>
                 <Card className="bg-dark text-white">
                     <Card.Body>
@@ -396,7 +395,7 @@ function Intro(props) {
                         <Card.Body>
                             <Card.Title>Royalties and longevity</Card.Title>
                             <Card.Text>
-                                Artists receive continuous royalties for all secondary sales and all transactions are traceable on-chain.
+                                Artists forever royalties on secondary sales, all traceable on-chain.
                             </Card.Text>
                         </Card.Body>
                     </Card>
