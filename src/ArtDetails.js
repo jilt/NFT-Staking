@@ -87,7 +87,6 @@ export default function ArtDetails(props) {
                           </div>
                           </> )
                           }
-                          {props.user === nft.owner_id ? ( nft.approved_account_ids[props.nearConfig.marketContractName] >= 0 ? Object.entries(nft.approved_account_ids).map(([contract, id]) => <div key={id}><p><small>On sale on: {contract}</small></p></div>) : <ModalSale token_id={nft.token_id} user={props.user} nearConfig={props.nearConfig} walletConnection={props.walletConnection} parseNearAmount={props.parseNearAmount} /> ): null }
                        </Card.Body>
                   </Card>
               </Col>
