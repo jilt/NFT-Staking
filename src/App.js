@@ -5,7 +5,7 @@ import "./App.css";
 
 // packakages imports
 import { Nav, Navbar, Container, Row } from "react-bootstrap";
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 
 // pages
@@ -48,7 +48,7 @@ const App = ({ currentUser, walletConnection }) => {
   return (
       <React.Fragment>
           {" "}
-          <BrowserRouter>
+          <HashRouter>
               <Helmet>
                   <meta charSet="utf-8" />
                   <title>Varda NFT ART Market</title>
@@ -113,7 +113,7 @@ const App = ({ currentUser, walletConnection }) => {
                   </Navbar>
               </Row>
               </Container>
-          </BrowserRouter>
+          </HashRouter>
       </React.Fragment>
   );
 };
