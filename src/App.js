@@ -52,13 +52,13 @@ const App = ({ currentUser, walletConnection }) => {
               <Helmet>
                   <meta charSet="utf-8" />
                   <title>Varda NFT ART Market</title>
-                  <link rel="canonical" href="https://market.varda.vision" />
+                  <link rel="canonical" href="https://nft.varda.vision" />
                   <meta name="description" content="Varda Near Protocol NFT market, with unlockable content" />
                   <meta name="keywords" content="nft, marketplace, unlockable content, near protocol" />
               </Helmet>
           <Navbar bg='dark' variant='dark'>
               <Container>
-                  <Navbar.Brand href='#home'>
+                  <Navbar.Brand href='https://nft.varda.vision'>
                       <img
                           alt=''
                           src={Logo}
