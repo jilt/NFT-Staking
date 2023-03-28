@@ -474,15 +474,15 @@ function Intro(props) {
                                                         </Link>
                                                         <Card.Body className="d-grid gap-2">
                                                             <Card.Title>{nft.metadata.title}</Card.Title>
-                                                            {straw.length > 0 ? straw.filter(lock => lock.id.match(new RegExp(nft.token_id, "i"))).length == 0 ?
-                                                                <p>No Unlockable</p>
-                                                                : straw.filter(lock => lock.id.match(new RegExp(nft.token_id, "i"))).map(lockable =>
-                                                                    <Button variant="outline-primary" key={nft.token_id}>
-                                                                        {lockable.CID.length > 0 ? <a href={`https://${lockable.CID}.ipfs.dweb.link`} target="_blank" title="your locked content" alt="your locked content">Get unlockable</a>
-                                                                            : <a href={lockable.link} target="_blank" title="your locked content" alt="your locked content">Get unlockable</a>}
-                                                                    </Button>
-                                                                ) : <p>No Unlockable</p>
-                                                            }
+                                                            //{straw.length > 0 ? straw.filter(lock => lock.id.match(new RegExp(nft.token_id, "i"))).length == 0 ?
+                                                                //<p>No Unlockable</p>
+                                                                //: straw.filter(lock => lock.id.match(new RegExp(nft.token_id, "i"))).map(lockable =>
+                                                                    //<Button variant="outline-primary" key={nft.token_id}>
+                                                                        //{lockable.CID.length > 0 ? <a href={`https://${lockable.CID}.ipfs.dweb.link`} target="_blank" title="your locked content" alt="your locked content">Get unlockable</a>
+                                                                           // : <a href={lockable.link} target="_blank" title="your locked content" alt="your locked content">Get unlockable</a>}
+                                                                    //</Button>
+                                                                //) : <p>No Unlockable</p>
+                                                            //}
                                                             <Card.Text><b>{nft.metadata.extra}</b><br />{nft.metadata.description}<br />
                                                                 Royalties<br />
                                                                 {
