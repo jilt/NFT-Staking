@@ -401,16 +401,6 @@ function Intro(props) {
                         </Card.Body>
                     </Card>
                 </Col>
-                <Col>
-                    <Card className="bg-dark text-white">
-                        <Card.Body>
-                            <Card.Title>Unlockable is a default</Card.Title>
-                            <Card.Text>
-                                To foster an exclusive relationship between anrtist and collector.
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
-                </Col>
                 </Row>
                 <Accordion defaultActiveKey="0" style={{ marginTop: "3vh" }}>
                     {nftMarketResults.length !== 0 ? (
