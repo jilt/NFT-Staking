@@ -85,7 +85,7 @@ function Intro(props) {
     async function shareNft(token_id) {
         let text = window.location.href + 'art/' + token_id;
         navigator.clipboard.writeText(text);
-        alert("copied" + text );
+        alert("copied" + text);
     }
 
     let collection = [];
@@ -214,7 +214,7 @@ function Intro(props) {
 
     const mintAssetToNft = async () => {
         handleUnlock()
-        
+
         let perpetual = new Object;
         var b = `${values.assetRoyalty}`;
         var a = `${values.assetPartner}`;
@@ -248,11 +248,11 @@ function Intro(props) {
             var link = `${values.assetLockLink}`
 
 
-            if ( !link ) {
+            if (!link) {
                 alert('please add a link to submit')
                 return
             }
-            let lockable = {id, CID:'', link}
+            let lockable = { id, CID: '', link }
 
             addUnlock(lockable)
         };
@@ -306,7 +306,7 @@ function Intro(props) {
         const files = [
             new File([blob], 'db.json')
         ]
-        
+
 
 
     }
@@ -327,80 +327,90 @@ function Intro(props) {
 
     return (
         <>
-        <Carousel fade>
-            <Carousel.Item interval={7000}>
-                <img
-                    fluid
-                    className="d-block w-100"
-                    src="https://raw.githubusercontent.com/jilt/NFT-Staking/main/docs/images/slider-9.jpg"
-                    alt="Wild-Pinups"
-                />
-                <Carousel.Caption>
+            <Carousel fade>
+                <Carousel.Item interval={7000}>
+                    <img
+                        fluid
+                        className="d-block w-100"
+                        src="https://raw.githubusercontent.com/jilt/NFT-Staking/main/docs/images/slider-9.jpg"
+                        alt="Wild-Pinups"
+                    />
+                    <Carousel.Caption>
                         <Button variant="outline-light" onClick={handleShow}>Wild Pinups</Button>
-                    <br />
-                </Carousel.Caption>
-            </Carousel.Item>
-            <Carousel.Item interval={7000}>
-                <img
-                    fluid
-                    className="d-block w-100"
-                    src="https://raw.githubusercontent.com/jilt/NFT-Staking/main/docs/images/slider-6.jpg"
-                    alt="Galdrastafir Game"
-                />
+                        <br />
+                    </Carousel.Caption>
+                </Carousel.Item>
+                <Carousel.Item interval={7000}>
+                    <img
+                        fluid
+                        className="d-block w-100"
+                        src="https://raw.githubusercontent.com/jilt/NFT-Staking/main/docs/images/slider-6.jpg"
+                        alt="Galdrastafir Game"
+                    />
 
-                <Carousel.Caption>
-                    <h3>Galdrastafir</h3>
-                    <Button variant="outline-light" onClick={oneShow} >Collection</Button>{' '}<Button variant="outline-light"><a href="https://game.varda.vision" target="_blank" title="Varda Tap To Play HTML game">Game</a></Button>{' '}
-                </Carousel.Caption>
-            </Carousel.Item>
-            <Carousel.Item interval={7000}>
-                <img
-                    fluid
-                    className="d-block w-100"
-                    src="https://raw.githubusercontent.com/jilt/NFT-Staking/main/docs/images/slider-7.jpg"
-                    alt="Elvenland Metaverse"
-                />
+                    <Carousel.Caption>
+                        <h3>Galdrastafir</h3>
+                        <Button variant="outline-light" onClick={oneShow} >Collection</Button>{' '}<Button variant="outline-light"><a href="https://game.varda.vision" target="_blank" title="Varda Tap To Play HTML game">Game</a></Button>{' '}
+                    </Carousel.Caption>
+                </Carousel.Item>
+                <Carousel.Item interval={7000}>
+                    <img
+                        fluid
+                        className="d-block w-100"
+                        src="https://raw.githubusercontent.com/jilt/NFT-Staking/main/docs/images/slider-7.jpg"
+                        alt="Elvenland Metaverse"
+                    />
 
-                <Carousel.Caption>
-                    <h3>Elvenland Metaverse</h3>
+                    <Carousel.Caption>
+                        <h3>Elvenland Metaverse</h3>
                         <Button variant="outline-light" onClick={twoShow}>Collection</Button>{' '}<Button variant="outline-light"><a href="https://elvenland.varda.vision" target="_blank" title="Voxel Elves Metaverse on the NEAR blockchain">Metaverse</a></Button>{' '}
-                </Carousel.Caption>
-            </Carousel.Item>
-            <Carousel.Item interval={7000}>
-                <img
-                    fluid
-                    className="d-block w-100"
-                    src="https://raw.githubusercontent.com/jilt/NFT-Staking/main/docs/images/slider-8.jpg"
-                    alt="Genesis NFTs"
-                />
+                    </Carousel.Caption>
+                </Carousel.Item>
+                <Carousel.Item interval={7000}>
+                    <img
+                        fluid
+                        className="d-block w-100"
+                        src="https://raw.githubusercontent.com/jilt/NFT-Staking/main/docs/images/slider-8.jpg"
+                        alt="Genesis NFTs"
+                    />
 
-                <Carousel.Caption>
+                    <Carousel.Caption>
                         <Button variant="outline-light"><a href="https://paras.id/jilt.near/creation" target="_blank" title="Genesis NFTs">Genesis NFTs</a></Button>{' '}
-                </Carousel.Caption>
-            </Carousel.Item>
-        </Carousel>
+                    </Carousel.Caption>
+                </Carousel.Item>
+            </Carousel>
             <Container style={{ marginTop: "3vh" }} fluid="md">
                 <Row>
-                <Col>
-                <Card className="bg-dark text-white">
-                    <Card.Body>
-                            <Card.Title>The future of art collecting</Card.Title>
-                        <Card.Text>
-                             Browse and build your collection of the most cutting-edge digital art.
-                        </Card.Text>
-                    </Card.Body>
-                </Card>
-                </Col>
-                <Col>
-                    <Card className="bg-dark text-white">
-                        <Card.Body>
-                            <Card.Title>Royalties and longevity</Card.Title>
-                            <Card.Text>
-                                Artists forever royalties on secondary sales, all traceable on-chain.
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
-                </Col>
+                    <Col>
+                        <Card className="bg-dark text-white">
+                            <Card.Body>
+                                <Card.Title>The future of art collecting</Card.Title>
+                                <Card.Text>
+                                    Browse and build your collection of the most cutting-edge digital art.
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col>
+                        <Card className="bg-dark text-white">
+                            <Card.Body>
+                                <Card.Title>Royalties and longevity</Card.Title>
+                                <Card.Text>
+                                    Artists forever royalties on secondary sales, all traceable on-chain.
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col>
+                        <Card className="bg-dark text-white">
+                            <Card.Body>
+                                <Card.Title>Unlockable is a default</Card.Title>
+                                <Card.Text>
+                                    To foster an exclusive relationship between anrtist and collector.
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 </Row>
                 <Accordion defaultActiveKey="0" style={{ marginTop: "3vh" }}>
                     {nftMarketResults.length !== 0 ? (
@@ -464,15 +474,14 @@ function Intro(props) {
                                                         </Link>
                                                         <Card.Body className="d-grid gap-2">
                                                             <Card.Title>{nft.metadata.title}</Card.Title>
-                                                            //{straw.length > 0 ? straw.filter(lock => lock.id.match(new RegExp(nft.token_id, "i"))).length == 0 ?
+                                                            //{ straw.length > 0 ? straw.filter(lock => lock.id.match(new RegExp(nft.token_id, "i"))).length == 0 ?
                                                                 //<p>No Unlockable</p>
                                                                 //: straw.filter(lock => lock.id.match(new RegExp(nft.token_id, "i"))).map(lockable =>
                                                                     //<Button variant="outline-primary" key={nft.token_id}>
                                                                         //{lockable.CID.length > 0 ? <a href={`https://${lockable.CID}.ipfs.dweb.link`} target="_blank" title="your locked content" alt="your locked content">Get unlockable</a>
-                                                                           // : <a href={lockable.link} target="_blank" title="your locked content" alt="your locked content">Get unlockable</a>}
+                                                                            //: <a href={lockable.link} target="_blank" title="your locked content" alt="your locked content">Get unlockable</a>}
                                                                     //</Button>
-                                                                //) : <p>No Unlockable</p>
-                                                            //}
+                                                                //) : <p>No Unlockable</p> }
                                                             <Card.Text><b>{nft.metadata.extra}</b><br />{nft.metadata.description}<br />
                                                                 Royalties<br />
                                                                 {
@@ -599,21 +608,21 @@ function Intro(props) {
             </Container>
             <Modal show={collVisible} size="lg" onHide={handleClose}>
                 <Modal.Header className="text-center" closeButton>
-                    <Modal.Title>{ props.coll }</Modal.Title>
+                    <Modal.Title>{props.coll}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <p className="text-center"><small>{props.desc}</small></p>
                     <p className="text-center">Floor <br />{firstFloor}</p>
                     <Container>
                         <Row>
-                            { results
-                                ? results.map((nft, index) => ( nft.metadata.extra === props.coll ?
+                            {results
+                                ? results.map((nft, index) => (nft.metadata.extra === props.coll ?
                                     <Col className="card-w" key={index}>
                                         <Card className="card inset">
-                                                <Card.Img variant="top" src={nft.metadata.media} />
+                                            <Card.Img variant="top" src={nft.metadata.media} />
                                             <Card.Body className="d-grid gap-2">
                                                 <Card.Title className="text-center">{nft.metadata.title}</Card.Title>
-                                                <Button variant="outline-primary" onClick={ () => singleVisible(nft)}>Details</Button>
+                                                <Button variant="outline-primary" onClick={() => singleVisible(nft)}>Details</Button>
                                                 <Card.Text className="text-center"><b>{nft.metadata.extra}</b><br />Owner: {nft.owner_id}
                                                     <br />Royalties: <br />
                                                     {
@@ -633,7 +642,7 @@ function Intro(props) {
                                                 </div>
                                             </Card.Body>
                                         </Card>
-                                    </Col> : " " )) : " " }
+                                    </Col> : " ")) : " "}
                         </Row>
                     </Container>
                 </Modal.Body>
@@ -765,8 +774,8 @@ function Intro(props) {
                                                 <div className="price">
                                                     {nft.sale_conditions} - NEAR
                                                 </div>
-                                            </div> {props.user !== nft.owner_id ? <Button variant="outline-primary" onClick={() => OfferPrice(nft.token_id, nft.sale_conditions) }>Buy</Button> : null}
-                                        </> }
+                                            </div> {props.user !== nft.owner_id ? <Button variant="outline-primary" onClick={() => OfferPrice(nft.token_id, nft.sale_conditions)}>Buy</Button> : null}
+                                        </>}
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -778,7 +787,7 @@ function Intro(props) {
                         Close
                     </Button>
                 </Modal.Footer>
-            </Modal> 
+            </Modal>
         </>
     );
 }
