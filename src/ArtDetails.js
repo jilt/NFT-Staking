@@ -44,17 +44,15 @@ export default function ArtDetails(props) {
                 }
             );
         setSales(saleTokens);
-        if (meta > 0) {
-            let retrieve = meta.media.includes("cloudflare");
-            if (retrieve) {
-                let delimiter = '/';
-                let start = 6;
-                let tokens = meta.media.split(delimiter).slice(4, start);
-                let result = tokens.join(delimiter);
-                let mediaResult = "https://nftstorage.link/ipfs/"+ result;
-                setMediaResult(mediaResult);
-                console.log("cambiato!!!!!!");
-            }
+        let retrieve = meta.media.includes("cloudflare");
+        if (retrieve) {
+            let delimiter = '/';
+            let start = 6;
+            let tokens = meta.media.split(delimiter).slice(4, start);
+            let result = tokens.join(delimiter);
+            let mediaResult = "https://nftstorage.link/ipfs/"+ result;
+            setMediaResult(mediaResult);
+            console.log("cambiato!!!!!!");
         }
     };
 
