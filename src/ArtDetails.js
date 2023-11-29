@@ -44,7 +44,6 @@ export default function ArtDetails(props) {
                 }
             );
         setSales(saleTokens);
-        console.log(meta.media);
     };
 
     const loadNewMedia = async (cond) => {
@@ -78,7 +77,7 @@ export default function ArtDetails(props) {
           <Row>
               <Col className="card-w">
                   <Card className="card inset">
-                      <Card.Img variant="top" src={ mediaResult } />
+                      <Card.Img variant="top" src={ loadNewMedia( meta.media ) } />
                       <Card.Body className="d-grid gap-2">
                           <Card.Title className="text-center">{meta.title}</Card.Title>
                           <Card.Text className="text-center"><b>{meta.extra}</b><br />Owner: {nft.owner_id}
