@@ -46,8 +46,8 @@ export default function ArtDetails(props) {
         setSales(saleTokens);
     };
     
-    const loadNewMedia = (cond) => {
-        let changing = cond.includes("cloudflare");
+    const loadNewMedia = async (cond) => {
+        let changing = await cond.includes("cloudflare");
         if(changing){
             let delimiter = '/';
             let start = 6;
