@@ -24,7 +24,7 @@ export default function ArtDetails(props) {
     }, [showLoader]);
 
     useEffect(() => {
-        if (mediaResult.length < 0) {
+        if (mediaResultstr.length === 0) {
             loadNewMedia(meta.media);
         }
     }, []);
