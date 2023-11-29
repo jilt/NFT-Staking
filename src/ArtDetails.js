@@ -46,7 +46,7 @@ export default function ArtDetails(props) {
         setSales(saleTokens);
     };
 
-    const loadNewMedia() = {
+    const loadNewMedia = () => {
             let delimiter = '/';
             let start = 6;
             let tokens = meta.media.split(delimiter).slice(4, start);
