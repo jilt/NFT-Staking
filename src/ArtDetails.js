@@ -47,10 +47,22 @@ export default function ArtDetails(props) {
     };
 
     const loadNewMedia = async (cond) => {
-        let changing = await cond;
-        let change = changing.includes("cloudflare");
-        console.log(change);
-        return cond
+        let changing = await cond.includes("cloudflare");
+        console.log(changing);
+        if(changing){
+            let delimiter = '/';
+            let start = 6;
+            let tokens = cond.split(delimiter).slice(4, start);
+            let resulting = tokens.join(delimiter);
+            let mediaResult = "https://nftstorage.link/ipfs/"+ resulting;
+            setMediaResult(mediaResult);
+            console.log("cambiato!!!!!!");
+            return mediaResult;
+        } else {
+            setMediaResult(cond);
+            console.log("non cambiato!!!!");
+            return cond;
+        }
     };
 
 
