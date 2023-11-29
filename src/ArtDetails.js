@@ -56,11 +56,11 @@ export default function ArtDetails(props) {
             let resulting = tokens.join(delimiter);
             let mediaResult = "https://nftstorage.link/ipfs/"+ resulting;
             setMediaResult(mediaResult);
-            console.log("cambiato!!!!!!");
+            console.log(mediaResult);
             return mediaResult;
         } else {
             setMediaResult(cond);
-            console.log("non cambiato!!!!");
+            console.log(cond);
             return cond;
         }
     };
