@@ -44,16 +44,17 @@ export default function ArtDetails(props) {
                 }
             );
         setSales(saleTokens);
-        let retrieve = meta.media.includes("cloudflare");
-        if (retrieve) {
+    };
+
+    loadNewMedia() {
             let delimiter = '/';
             let start = 6;
             let tokens = meta.media.split(delimiter).slice(4, start);
-            let result = tokens.join(delimiter);
-            let mediaResult = "https://nftstorage.link/ipfs/"+ result;
+            let resulting = tokens.join(delimiter);
+            let mediaResult = "https://nftstorage.link/ipfs/"+ resulting;
             setMediaResult(mediaResult);
+            return mediaResult;
             console.log("cambiato!!!!!!");
-        }
     };
 
 
@@ -68,7 +69,7 @@ export default function ArtDetails(props) {
           <Row>
               <Col className="card-w">
                   <Card className="card inset">
-                      <Card.Img variant="top" src={ mediaResult > 0 ? mediaResult : meta.media } />
+                      <Card.Img variant="top" src={ meta.media.includes("cloudflare") ? loadNewMedia() : meta.media } />
                       <Card.Body className="d-grid gap-2">
                           <Card.Title className="text-center">{meta.title}</Card.Title>
                           <Card.Text className="text-center"><b>{meta.extra}</b><br />Owner: {nft.owner_id}
