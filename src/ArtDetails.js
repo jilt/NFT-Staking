@@ -23,14 +23,6 @@ export default function ArtDetails(props) {
         }
     }, [showLoader]);
 
-    useEffect(() => {
-        if (meta.media.length === 0) {
-            console.log("no image");
-        } else {
-            loadNewMedia(meta.media);
-        }
-    }, []);
-
     const loadNFT = async () => {
         let result = await props.walletConnection
             .account()
@@ -52,6 +44,7 @@ export default function ArtDetails(props) {
                 }
             );
         setSales(saleTokens);
+        loadNewMedia(meta.media);
     };
 
     const loadNewMedia = async (cond) => {
