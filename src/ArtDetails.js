@@ -46,7 +46,8 @@ export default function ArtDetails(props) {
         setSales(saleTokens);
     };
 
-    const loadNewMedia = () => {
+    const loadNewMedia = (cond) => {
+        if(cond.includes("cloudflare")){
             let delimiter = '/';
             let start = 6;
             let tokens = meta.media.split(delimiter).slice(4, start);
@@ -55,6 +56,11 @@ export default function ArtDetails(props) {
             setMediaResult(mediaResult);
             return mediaResult;
             console.log("cambiato!!!!!!");
+        } else {
+            setMediaResult(cond);
+            return cond;
+            console.log("non cambiato!!!!");
+        }
     };
 
 
@@ -69,7 +75,7 @@ export default function ArtDetails(props) {
           <Row>
               <Col className="card-w">
                   <Card className="card inset">
-                      <Card.Img variant="top" src={ meta.media.includes("cloudflare") ? loadNewMedia() : meta.media } />
+                      <Card.Img variant="top" src={ meta.media.includes( loadNewMedia(meta.media) } />
                       <Card.Body className="d-grid gap-2">
                           <Card.Title className="text-center">{meta.title}</Card.Title>
                           <Card.Text className="text-center"><b>{meta.extra}</b><br />Owner: {nft.owner_id}
