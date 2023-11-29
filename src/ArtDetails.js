@@ -47,20 +47,8 @@ export default function ArtDetails(props) {
     };
 
     const loadNewMedia = (cond) => {
-        if(cond.includes("cloudflare")){
-            let delimiter = '/';
-            let start = 6;
-            let tokens = meta.media.split(delimiter).slice(4, start);
-            let resulting = tokens.join(delimiter);
-            let mediaResult = "https://nftstorage.link/ipfs/"+ resulting;
-            setMediaResult(mediaResult);
-            return mediaResult;
-            console.log("cambiato!!!!!!");
-        } else {
-            setMediaResult(cond);
-            return cond;
-            console.log("non cambiato!!!!");
-        }
+        console.log(cond);
+        return cond;
     };
 
 
