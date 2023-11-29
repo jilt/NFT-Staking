@@ -44,7 +44,7 @@ export default function ArtDetails(props) {
                 }
             );
         setSales(saleTokens);
-        loadNewMedia(meta.media);
+        console.log(meta.media);
     };
 
     const loadNewMedia = async (cond) => {
