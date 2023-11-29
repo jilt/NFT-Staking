@@ -47,8 +47,9 @@ export default function ArtDetails(props) {
     };
 
     const loadNewMedia = async (cond) => {
-        let changing = await cond.includes("cloudflare");
-        console.log(changing);
+        let changing = await cond;
+        let change = changing.includes("cloudflare");
+        console.log(change);
         return cond
     };
 
