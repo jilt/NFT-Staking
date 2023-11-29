@@ -47,8 +47,8 @@ export default function ArtDetails(props) {
     };
 
     const loadNewMedia = (cond) => {
-        console.log(cond);
-        return cond
+        let change = cond.includes("cloudflare");
+        return change
     };
 
 
