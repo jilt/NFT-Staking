@@ -13,6 +13,7 @@ export default function ArtDetails(props) {
     const [showLoader, setShowLoader] = useState(false);
     const [nft, setNFT] = useState({});
     const [meta, setMeta] = useState({});
+    const [mediaResult, setMediaResult] = useState("");
     const [royalty, setRoyalty] = useState({});
     const [sales, setSales] = useState([]);
 
@@ -43,7 +44,17 @@ export default function ArtDetails(props) {
                 }
             );
         setSales(saleTokens);
-
+        if (meta > 0) {
+            let retrieve = meta.media.includes("cloudflare");
+            if (retrieve) {
+                let delimiter = '/';
+                let start = 6;
+                let tokens = meta.media.split(delimiter).slice(4, start);
+                let result = tokens.join(delimiter);
+                let mediaResult = "https://nftstorage.link/ipfs/"+ result;
+                setMediaResult(mediaResult);
+            }
+        }
     };
 
 
@@ -58,7 +69,7 @@ export default function ArtDetails(props) {
           <Row>
               <Col className="card-w">
                   <Card className="card inset">
-                      <Card.Img variant="top" src={meta.media} />
+                      <Card.Img variant="top" src={ mediaResult > 0 ? mediaResult : meta.media } />
                       <Card.Body className="d-grid gap-2">
                           <Card.Title className="text-center">{meta.title}</Card.Title>
                           <Card.Text className="text-center"><b>{meta.extra}</b><br />Owner: {nft.owner_id}
