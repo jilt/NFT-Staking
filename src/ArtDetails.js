@@ -45,14 +45,9 @@ export default function ArtDetails(props) {
             );
         setSales(saleTokens);
     };
-useEffect(() => {
-        if (meta.media != undefined) {
-            loadNewMedia(meta.media);
-        }
-    }, []);
     
-    const loadNewMedia = async (cond) => {
-        let changing = await cond.includes("cloudflare");
+    const loadNewMedia = (cond) => {
+        let changing = cond.includes("cloudflare");
         if(changing){
             let delimiter = '/';
             let start = 6;
@@ -62,9 +57,13 @@ useEffect(() => {
             setMediaResult(mediaResult);
             console.log(mediaResult);
         } else {
+            let mediaResult = cond;
             setMediaResult(cond);
             console.log(cond);
         }
+        return (
+            <Card.Img variant="top" src={ mediaResult } />
+        )
     };
 
 
@@ -79,7 +78,7 @@ useEffect(() => {
           <Row>
               <Col className="card-w">
                   <Card className="card inset">
-                      <Card.Img variant="top" src={ mediaResult } />
+                    {loadNewMedia(meta.media)}
                       <Card.Body className="d-grid gap-2">
                           <Card.Title className="text-center">{meta.title}</Card.Title>
                           <Card.Text className="text-center"><b>{meta.extra}</b><br />Owner: {nft.owner_id}
