@@ -46,9 +46,15 @@ export default function ArtDetails(props) {
         setSales(saleTokens);
     };
 
-    const loadNewMedia = (cond) => {
-        let change = cond.includes("cloudflare");
-        return change
+    const loadNewMedia = async (cond) => {
+        let result = await props.walletConnection
+            .account()
+            .viewFunction(props.nearConfig.contractName, "nft_token", {
+                token_id: id,
+            });
+        let changing = cond.includes("cloudflare");
+        console.log(changing);
+        return cond
     };
 
 
