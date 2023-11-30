@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Route, useParams, Routes } from "react-router-dom";
 import {Helmet} from "react-helmet";
+import {Image} from ./Image.js;
 
 // Modals
 
@@ -45,27 +46,6 @@ export default function ArtDetails(props) {
             );
         setSales(saleTokens);
     };
-    
-    const LoadNewMedia = (cond) => {
-        let changing = cond.includes("cloudflare");
-        if(changing){
-            let delimiter = '/';
-            let start = 6;
-            let tokens = cond.split(delimiter).slice(4, start);
-            let resulting = tokens.join(delimiter);
-            let mediaResult = "https://nftstorage.link/ipfs/"+ resulting;
-            setMediaResult(mediaResult);
-            console.log(mediaResult);
-        } else {
-            let mediaResult = cond;
-            setMediaResult(cond);
-            console.log(cond);
-        }
-        return (
-            <Card.Img variant="top" src={ mediaResult } />
-        )
-    };
-
 
     return (
         <Container style={{ marginTop: "3vh" }} fluid="md">
@@ -78,7 +58,7 @@ export default function ArtDetails(props) {
           <Row>
               <Col className="card-w">
                   <Card className="card inset">
-                    <LoadNewMedia cond={meta.media}/>
+                    <Image media={meta.media}/>
                       <Card.Body className="d-grid gap-2">
                           <Card.Title className="text-center">{meta.title}</Card.Title>
                           <Card.Text className="text-center"><b>{meta.extra}</b><br />Owner: {nft.owner_id}
