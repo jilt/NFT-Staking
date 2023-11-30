@@ -12,7 +12,7 @@ export default function Image(props) {
     }, []);
     
     const loadNewMedia = () => {
-        let cond = prop.media;
+        let cond = props.media;
         let changing = cond.includes("cloudflare");
         if(changing){
             let delimiter = '/';
