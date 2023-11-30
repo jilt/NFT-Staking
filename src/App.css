@@ -6,6 +6,10 @@ html, body, #root, .x-wrapper{
     display: contents;
 }
 
+.carousel-caption {
+    border-color: rgba(0, 0, 0, .5);
+}
+
 h1 {
     margin-bottom: 1em;
 }
