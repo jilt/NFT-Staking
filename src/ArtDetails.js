@@ -46,8 +46,8 @@ export default function ArtDetails(props) {
         setSales(saleTokens);
     };
     
-    const loadNewMedia = async (cond) => {
-        let changing = await cond.includes("cloudflare");
+    const LoadNewMedia = (cond) => {
+        let changing = cond.includes("cloudflare");
         if(changing){
             let delimiter = '/';
             let start = 6;
@@ -78,7 +78,7 @@ export default function ArtDetails(props) {
           <Row>
               <Col className="card-w">
                   <Card className="card inset">
-                    {loadNewMedia() => (meta.media)}
+                    <LoadNewMedia cond={meta.media}/>
                       <Card.Body className="d-grid gap-2">
                           <Card.Title className="text-center">{meta.title}</Card.Title>
                           <Card.Text className="text-center"><b>{meta.extra}</b><br />Owner: {nft.owner_id}
