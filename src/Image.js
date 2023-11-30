@@ -11,13 +11,14 @@ useEffect(() => {
             loadNewMedia();
     }, []);
     
-    const loadNewMedia = () => {
-        let cond = props.media;
+    const loadNewMedia = async () => {
+        console.log(props.media);
+        let cond = await props.media;
             let delimiter = '/';
             let start = 6;
-            let tokens = cond.split(delimiter).slice(4, start);
-            let resulting = tokens.join(delimiter);
-            let mediaResult = "https://nftstorage.link/ipfs/"+ resulting;
+            let tokens = await cond.split(delimiter).slice(4, start);
+            let resulting = await tokens.join(delimiter);
+            let mediaResult = await "https://nftstorage.link/ipfs/"+ resulting;
             setMediaResult(mediaResult);
             console.log(mediaResult);
     };
