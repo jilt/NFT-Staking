@@ -6,8 +6,12 @@ import { Route, useParams, Routes } from "react-router-dom";
 export default function Image(props) {
     
   const [mediaResult, setMediaResult] = useState("");
+
+    useEffect(() => {
+            loadNewMedia();
+    }, []);
     
-    const LoadNewMedia = () => {
+    const loadNewMedia = () => {
         let cond = prop.media;
         let changing = cond.includes("cloudflare");
         if(changing){
