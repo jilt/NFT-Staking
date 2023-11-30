@@ -11,8 +11,8 @@ useEffect(() => {
             loadNewMedia();
     }, []);
     
-    const loadNewMedia = async () => {
-        console.log(props.media);
+    const loadNewMedia = async (props.media) => {
+        console.log(`${props.media}`);
         let cond = await props.media;
             let delimiter = '/';
             let start = 6;
