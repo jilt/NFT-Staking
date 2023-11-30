@@ -9,7 +9,9 @@ export default function Image(props) {
 
     useEffect(() => {
             loadNewMedia();
+            console.log(props.media);
     }, []);
+
     
     const loadNewMedia = async () => {
         let cond =  await props.media;
