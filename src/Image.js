@@ -12,9 +12,9 @@ export default function Image(props) {
     }, []);
 
     
-    const loadNewMedia = async () => {
-        let cond =  await props.media;
-        let changing =  await cond.includes("cloudflare");
+    const loadNewMedia = () => {
+        let cond = props.media;
+        let changing = cond.includes("cloudflare");
         if(changing){
             let delimiter = '/';
             let start = 6;
@@ -32,6 +32,5 @@ export default function Image(props) {
   
   return (
             <Card.Img variant="top" src={mediaResult} />
-          <p>{mediaResult}</p>
   )
 }
