@@ -8,12 +8,11 @@ export default function Image(props) {
   const [mediaResult, setMediaResult] = useState("");
 
 useEffect(() => {
-            loadNewMedia();
+            loadNewMedia(props.media);
+            console.log(props.media);
     }, []);
     
-    const loadNewMedia = async (props.media) => {
-        console.log(`${props.media}`);
-        let cond = await props.media;
+    const loadNewMedia = async (cond) => {
             let delimiter = '/';
             let start = 6;
             let tokens = await cond.split(delimiter).slice(4, start);
