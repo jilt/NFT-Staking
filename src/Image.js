@@ -32,5 +32,6 @@ export default function Image(props) {
   
   return (
             <Card.Img variant="top" src={mediaResult} />
+          <p>{mediaResult}</p>
   )
 }
