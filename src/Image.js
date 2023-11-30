@@ -8,22 +8,17 @@ export default function Image(props) {
   const [mediaResult, setMediaResult] = useState("");
 
 useEffect(() => {
-            loadNewMedia(props.media);
+            loadNewMedia();
             console.log(props.media);
     }, []);
     
-    const loadNewMedia = async (cond) => {
-            let delimiter = '/';
-            let start = 6;
-            let tokens = await cond.split(delimiter).slice(4, start);
-            let resulting = await tokens.join(delimiter);
-            let mediaResult = await "https://nftstorage.link/ipfs/"+ resulting;
+    const loadNewMedia = () => {
+            let mediaResult = "https://nftstorage.link/ipfs/";
             setMediaResult(mediaResult);
-            console.log(mediaResult);
     };
   
   return (
             <Card.Img variant="top" src={ props.media.includes("cloudflare") ? 
-                mediaResult : props.media } />
+                mediaResult + props.media.split('/').slice(4, 6) : props.media } />
   )
 }
