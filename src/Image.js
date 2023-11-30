@@ -6,6 +6,10 @@ import { Route, useParams, Routes } from "react-router-dom";
 export default function Image(props) {
     
   const [mediaResult, setMediaResult] = useState("");
+
+useEffect(() => {
+            loadNewMedia();
+    }, []);
     
     const loadNewMedia = () => {
         let cond = props.media;
@@ -16,11 +20,10 @@ export default function Image(props) {
             let mediaResult = "https://nftstorage.link/ipfs/"+ resulting;
             setMediaResult(mediaResult);
             console.log(mediaResult);
-            return mediaResult
     };
   
   return (
             <Card.Img variant="top" src={ props.media.includes("cloudflare") ? 
-                loadNewMedia() : props.media } />
+                mediaResult : props.media } />
   )
 }
