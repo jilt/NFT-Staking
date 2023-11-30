@@ -14,7 +14,6 @@ export default function ArtDetails(props) {
     const [showLoader, setShowLoader] = useState(false);
     const [nft, setNFT] = useState({});
     const [meta, setMeta] = useState({});
-    const [mediaResult, setMediaResult] = useState("");
     const [royalty, setRoyalty] = useState({});
     const [sales, setSales] = useState([]);
 
