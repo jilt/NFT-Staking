@@ -284,7 +284,7 @@ function Intro(props) {
 
     // unlockable content
 
-    const relay = 'https://Varda-vault-relay-server.jilt1.repl.co/locked/'
+    const relay = process.env.VAULT_RELAY
 
 
     // add unlockable
