@@ -19,6 +19,6 @@ useEffect(() => {
   
   return (
             <Card.Img variant="top" src={ props.media.includes("cloudflare") ? 
-                mediaResult + props.media.split('/').slice(4, 6) : props.media } />
+                mediaResult + props.media.split('/').slice(4, 6).join('/') : props.media } />
   )
 }
