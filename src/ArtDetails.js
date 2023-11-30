@@ -14,6 +14,7 @@ export default function ArtDetails(props) {
     const [showLoader, setShowLoader] = useState(false);
     const [nft, setNFT] = useState({});
     const [meta, setMeta] = useState({});
+    const [media, setMedia] = useState('');
     const [royalty, setRoyalty] = useState({});
     const [sales, setSales] = useState([]);
 
@@ -31,6 +32,7 @@ export default function ArtDetails(props) {
             });
         setNFT(result);
         setMeta(result.metadata);
+        setMedia(result.metadata.media);
         setRoyalty(result.royalty);
         let saleTokens = await props.walletConnection
             .account()
@@ -57,7 +59,7 @@ export default function ArtDetails(props) {
           <Row>
               <Col className="card-w">
                   <Card className="card inset">
-    { meta.media.length === 0 ? <p>No Image</p>: <Image media={meta.media}/> }
+    {media}
                       <Card.Body className="d-grid gap-2">
                           <Card.Title className="text-center">{meta.title}</Card.Title>
                           <Card.Text className="text-center"><b>{meta.extra}</b><br />Owner: {nft.owner_id}
