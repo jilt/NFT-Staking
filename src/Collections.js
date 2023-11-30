@@ -600,7 +600,7 @@ function Intro(props) {
                                 ? results.map((nft, index) => (nft.metadata.extra === props.coll ?
                                     <Col className="card-w" key={index}>
                                         <Card className="card inset">
-                                            <Card.Img variant="top" src={nft.metadata.media} />
+                                            <Image media={nft.metadata.media}/>
                                             <Card.Body className="d-grid gap-2">
                                                 <Card.Title className="text-center">{nft.metadata.title}</Card.Title>
                                                 <Button variant="outline-primary" onClick={() => singleVisible(nft)}>Details</Button>
@@ -646,7 +646,7 @@ function Intro(props) {
                                     <Col className="card-w" key={index}>
                                         <Card className="card inset">
                                             <a className="asset-anchor" href="#">
-                                                <Card.Img variant="top" src={nft.metadata.media} />
+                                                <Image media={nft.metadata.media}/>
                                             </a>
                                             <Card.Body className="d-grid gap-2">
                                                 <Card.Title className="text-center">{nft.metadata.title}</Card.Title>
@@ -693,7 +693,7 @@ function Intro(props) {
                                     <Col className="card-w" key={index}>
                                         <Card className="card inset">
                                             <a className="asset-anchor" href="#">
-                                                <Card.Img variant="top" src={nft.metadata.media} />
+                                                <Image media={nft.metadata.media}/>
                                             </a>
                                             <Card.Body className="d-grid gap-2">
                                                 <Card.Title className="text-center">{nft.metadata.title}</Card.Title>
@@ -734,7 +734,7 @@ function Intro(props) {
                         <Row>
                             <Col className="card-w">
                                 <Card className="card inset">
-                                    <Card.Img variant="top" src={meta.media} />
+                                    <Image media={meta.media}/>
                                     <Card.Body className="d-grid gap-2">
                                         <Card.Title className="text-center">{meta.title}</Card.Title>
                                         <p className="text-center"><small><b>{meta.extra}</b></small></p>
