@@ -11,9 +11,9 @@ export default function Image(props) {
             loadNewMedia();
     }, []);
     
-    const loadNewMedia = () => {
-        let cond = props.media;
-        let changing = cond.includes("cloudflare");
+    const loadNewMedia = async () => {
+        let cond =  await props.media;
+        let changing =  await cond.includes("cloudflare");
         if(changing){
             let delimiter = '/';
             let start = 6;
