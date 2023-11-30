@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Route, useParams, Routes } from "react-router-dom";
 import {Helmet} from "react-helmet";
-import {Image} from "./Image";
+import Image from './Image'
 
 // Modals
 
