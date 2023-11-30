@@ -58,7 +58,7 @@ export default function ArtDetails(props) {
           <Row>
               <Col className="card-w">
                   <Card className="card inset">
-                    <Image media={meta.media}/>
+    { meta.media.length === 0 ? <Image media={meta.media}/> : }
                       <Card.Body className="d-grid gap-2">
                           <Card.Title className="text-center">{meta.title}</Card.Title>
                           <Card.Text className="text-center"><b>{meta.extra}</b><br />Owner: {nft.owner_id}
