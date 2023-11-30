@@ -9,7 +9,6 @@ export default function Image(props) {
 
 useEffect(() => {
             loadNewMedia();
-            console.log(props.media);
     }, []);
     
     const loadNewMedia = () => {
