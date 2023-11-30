@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Carousel from 'react-bootstrap/Carousel';
 import { Modal, Button, Container, Row, Col, Card, Accordion } from "react-bootstrap";
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import Image from './Image';
 
 // Modals
 
@@ -414,7 +415,7 @@ function Intro(props) {
                                                 <Col className="card-w" key={index}>
                                                     <Card className="card inset">
                                                         <Link to={`/art/${nft.token_id}`}>
-                                                            <Card.Img variant="top" src={nft.metadata.media} />
+                                                            <Image media={nft.metadata.media}/>
                                                         </Link>
                                                         <Card.Body className="d-grid gap-2">
                                                             <Card.Title>{nft.metadata.title}</Card.Title>
@@ -460,7 +461,7 @@ function Intro(props) {
                                                 <Col className="card-w" key={index}>
                                                     <Card className="card inset">
                                                         <Link to={`/art/${nft.token_id}`}>
-                                                            <Card.Img variant="top" src={nft.metadata.media} />
+                                                             <Image media={nft.metadata.media}/>
                                                         </Link>
                                                         <Card.Body className="d-grid gap-2">
                                                             <Card.Title>{nft.metadata.title}</Card.Title>
