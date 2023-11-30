@@ -9,7 +9,6 @@ export default function Image(props) {
 
     useEffect(() => {
             loadNewMedia();
-            console.log(props.media);
     }, []);
 
     
@@ -32,6 +31,6 @@ export default function Image(props) {
     };
   
   return (
-            <Card.Img variant="top" src={ mediaResult } />
+            <Card.Img variant="top" src={props.media} />
   )
 }
